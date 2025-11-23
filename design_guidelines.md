@@ -1,111 +1,139 @@
-# DashKids Landing Page - Design Guidelines
+# DashKids Landing Page - Dark Theme Design Guidelines
 
 ## Design Approach
-**Reference-Based**: Drawing from vibrant NFT collection sites (Cool Cats, Doodles) and retro gaming aesthetics, maintaining the existing playful, energetic comic book style with neo-brutalist elements.
+**Reference-Based**: Modern dark NFT aesthetics inspired by Moonbirds, Azuki, and Pudgy Penguins, combined with neo-brutalist boldness. High-contrast yellow accents on dark backgrounds create electric energy while maintaining playful sophistication.
 
 ## Core Design Principles
-- **High Energy**: Bold, punchy visual language that conveys speed and excitement
-- **Playful Professionalism**: Kid-friendly aesthetic that doesn't compromise on quality
-- **Clear Hierarchy**: Important CTAs and collection info immediately visible
-- **Confidence**: Unapologetic use of bold borders, shadows, and vibrant contrasts
+- **Electric Contrast**: Yellow highlights pop against deep charcoal for maximum visual impact
+- **Bold Brutalism**: Thick borders, heavy shadows, and unapologetic geometric shapes
+- **Depth Through Darkness**: Layered slate tones create dimension without traditional gradients
+- **Speed & Energy**: Maintained through sharp angles, dynamic spacing, and movement
+
+## Color System
+**Backgrounds**:
+- Primary: Charcoal #1A1A1A
+- Secondary cards: Slate #2D2D2D
+- Elevated elements: Lighter slate #3A3A3A
+
+**Accents**:
+- Primary yellow: #FFD700 (gold)
+- Hover yellow: #FFC700 (darker gold)
+- Text on yellow: #1A1A1A (charcoal)
+
+**Borders & Shadows**:
+- Border: Yellow #FFD700 (4px width)
+- Shadow: Yellow #FFD700 at 40% opacity (8px offset)
+- Text on dark: White #FFFFFF
 
 ## Typography System
-- **Display/Headers**: Bangers (existing) - sizes: 64px (logo), 36px (section headers), 28px (tagline), 18px (labels)
-- **Body/UI**: Nunito 600-800 weight - sizes: 17px (body), 16px (buttons), 14-15px (mobile body)
-- **Hierarchy**: Heavy letter-spacing (2-4px) on headers, tight on body text
-- **Scale**: Reduce header sizes by ~30% on mobile (64px → 44px, 36px → 26px)
+- **Display**: Bangers - 72px hero, 48px section headers, 32px subsections
+- **Body**: Nunito 700-800 weight - 18px body, 17px buttons, 15px labels
+- **Color**: White on dark backgrounds, charcoal on yellow buttons/highlights
+- **Letter-spacing**: 3-5px on headers, normal on body
+- **Mobile scale**: Reduce by 35% (72px → 47px, 48px → 31px)
 
-## Layout & Spacing System
-**Spacing Units**: Consistent use of multiples of 8px
-- Section padding: 40-60px desktop, 25-35px mobile
-- Card padding: 35-40px desktop, 20-25px mobile
-- Grid gaps: 20px desktop, 15px mobile
-- Button padding: 16px vertical, 24px horizontal
+## Layout & Spacing
+**Units**: 8px multiples throughout
+- Section padding: 64px desktop, 32px mobile
+- Card padding: 40px desktop, 24px mobile
+- Grid gaps: 24px desktop, 16px mobile
+- Component margins: 48px between major sections
 
-**Container**: Max-width 1100px, 20px side padding, centered
+**Container**: Max-width 1200px, 24px horizontal padding
 
 **Grid Patterns**:
-- Gallery: 4 columns desktop → 2 columns tablet → 2 columns mobile (maintain 2-up for visual impact)
-- Links: 3 columns desktop → 2 columns tablet → 1 column mobile
-- Consistent aspect ratios on gallery items (1:1 square images)
+- Hero: Full-width with centered content overlay
+- Gallery: 3 columns desktop → 2 columns tablet → 1 column mobile
+- Features: 3 columns desktop → 2 columns tablet → 1 column mobile
 
 ## Component Library
 
-### Header Section
-- Logo image with text fallback (existing DASHKIDS text styling)
-- Tagline with lightning bolt emojis
-- Centered alignment throughout
+### Hero Section
+- Full-width character showcase image (1920x1080 minimum)
+- Centered content overlay with semi-transparent charcoal backdrop (backdrop-blur-xl)
+- Logo: 280px max-width with yellow glow effect
+- CTA buttons: Yellow primary with 4px yellow border, 6px shadow
+- Tagline: White text, 48px, Bangers font
+- Height: 85vh desktop, 70vh mobile
 
-### About Section (Story Card)
-- Cream background (#FFF8E7), 4px black border, 8px offset shadow
-- 20px border-radius for friendly feel
-- Generous padding for readability
-- Italic emphasis for closing statement
+### About/Story Card
+- Slate background #2D2D2D
+- 4px yellow border, 8px yellow shadow (40% opacity, offset right-down)
+- 16px border-radius
+- White body text with yellow highlights on key phrases
+- 40px padding desktop, 24px mobile
 
-### Gallery Grid
-- Square cards with 4px borders, 6px shadows
-- Hover: Lift effect (-3px transform, increased shadow)
-- Image: Cover fill, 1:1 aspect ratio, crisp rendering
-- Labels: Bangers font, centered, cream background strip at bottom
+### NFT Gallery Grid
+- Character cards: Square aspect ratio
+- Image on charcoal #1A1A1A background with 4px yellow border
+- Hover: -4px lift, increased shadow spread, yellow glow intensifies
+- Label strip: Yellow background bar at bottom, charcoal text, Bangers font
+- Card shadow: 6px offset yellow at 40% opacity
 
-### Link Buttons
-- Six distinct color variants (maintain existing palette)
-- Icons 22px, left-aligned with 10px gap
-- Active state: Translate shadow to (0,0) for "press" effect
-- Hover: Slight shadow reduction for depth
-- Mobile: Full-width stack for easy touch targets (min 44px height)
+### Collection Stats Bar
+- Horizontal layout, slate background #2D2D2D
+- 3-4 key metrics (Total Supply, Floor Price, Holders, Volume)
+- Yellow numbers (64px), white labels (16px)
+- Yellow dividers between stats (2px vertical lines)
+- 4px yellow top/bottom borders
 
-### Speed Lines Background
-- Fixed positioning, animated horizontal streaks
-- 25% opacity, red gradient (#E84A35)
-- Staggered animation delays for dynamic feel
-- Non-interactive overlay (pointer-events: none)
+### Link/Action Buttons Section
+- Yellow primary buttons with charcoal text
+- 4px yellow border, 6px shadow
+- Icon: 24px, left-aligned with 12px gap
+- Active state: Shadow offset to (0,0) for press effect
+- Hover: Slight shadow blur increase
+- Mobile: Full-width stack, 52px minimum height
+- 3-column desktop → 2-column tablet → 1-column mobile
+
+### Animated Background Elements
+- Floating geometric shapes (circles, triangles) in yellow at 8% opacity
+- Subtle parallax scroll effect on hero
+- Diagonal speed lines in yellow (15% opacity) moving right-to-left
+- All animations: pointer-events: none, reduced motion on mobile
 
 ## Image Strategy
 
-**Logo**: 
-- Primary: High-resolution PNG/SVG logo (320px max-width desktop, 240px mobile)
-- Fallback: Styled text "DASHKIDS" with outline shadow effect (already implemented)
+**Hero Image**: 
+- Large showcase featuring multiple DashKids characters in action pose
+- Dimensions: 1920x1080 minimum, optimized WebP format
+- Overlay: Gradient from transparent to charcoal at bottom 30%
+- Buttons use backdrop-blur background, no hover backdrop changes
 
-**Gallery (4 Images Required)**:
-- Dashing, Chillin, Portrait, Animated versions of characters
-- CloudFront CDN delivery for performance
+**Gallery (6 Images)**:
+- Individual character variants: Dashing, Chillin, Portrait, Animated, Rare, Golden
+- Square format 800x800px for retina displays
+- Yellow border treatment on each
 - Lazy loading below fold
-- Placeholder: Solid cream background with character name during load
-- Error handling: Show label with "Image Loading..." message
-- Dimensions: Serve at 600x600px for retina displays
+- Error state: Slate background with yellow "Loading..." text
 
-**No Hero Image**: This page leads with bold text branding instead
+**Logo**:
+- High-resolution PNG with transparent background
+- Yellow stroke/glow effect in design
+- 280px max-width desktop, 200px mobile
 
 ## Responsive Breakpoints
-- **Desktop**: 901px+ (4-column gallery, 3-column links)
-- **Tablet**: 601-900px (2-column gallery, 2-column links)
-- **Mobile**: ≤600px (2-column gallery, 1-column links, stacked header)
-
-## Mobile Optimization
-- Increase touch targets: Minimum 44x44px for all interactive elements
-- Reduce decorative animations on mobile (fewer speed lines)
-- Larger tap areas on buttons with comfortable spacing
-- Maintain 2-column gallery for visual richness
-- Scale down typography proportionally (not linearly)
+- **Desktop**: 1024px+ (3-column layouts)
+- **Tablet**: 640-1023px (2-column layouts)
+- **Mobile**: ≤639px (1-column, stacked navigation)
 
 ## Accessibility
-- Semantic HTML with proper heading hierarchy (h1 → h2)
-- Alt text on all images describing character versions
-- Sufficient color contrast (black on yellow, white on colored buttons)
-- Focus states visible on keyboard navigation
-- ARIA labels on external link icons
+- WCAG AA contrast: Yellow #FFD700 on charcoal passes
+- White text on dark backgrounds minimum 4.5:1 ratio
+- Focus rings: 3px yellow outline on all interactive elements
+- Semantic heading hierarchy (h1 → h2 → h3)
+- Alt text on all images describing character traits
 
-## Performance Enhancements
-- Lazy load gallery images (loading="lazy" attribute)
-- Optimize animation performance (CSS transforms only)
-- Preload critical fonts (Bangers, Nunito)
-- Async load non-critical external resources
-- Image error handling with graceful fallbacks
+## Performance
+- Lazy load all gallery images
+- Preload hero image and critical fonts (Bangers, Nunito)
+- CSS transforms only for animations (GPU acceleration)
+- Reduce animation complexity on mobile devices
+- CDN delivery for all image assets
 
 ## Quality Standards
-- Pixel-perfect borders (consistent 4px throughout)
-- Crisp image rendering (image-rendering: crisp-edges for pixel art if applicable)
-- Smooth hover transitions (200ms ease)
+- Consistent 4px borders across all components
+- Yellow shadows at 8px offset, 40% opacity universally
+- 200ms transitions on hover states
 - No layout shift during image loading (defined aspect ratios)
-- Professional polish on all interactive states
+- Crisp rendering for pixel art characters
