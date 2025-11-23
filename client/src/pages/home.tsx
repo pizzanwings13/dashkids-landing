@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Zap } from "lucide-react";
+import logoPath from "@assets/dashkids logo_1763857928084.png";
 
 const galleryImages = [
   {
@@ -105,48 +106,18 @@ function SpeedLines() {
 }
 
 function LogoHeader() {
-  const [logoError, setLogoError] = useState(false);
-  const [logoLoading, setLogoLoading] = useState(true);
-  const logoUrl = "/dashkids-logo.png";
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = logoUrl;
-    img.onload = () => {
-      setLogoLoading(false);
-      setLogoError(false);
-    };
-    img.onerror = () => {
-      setLogoLoading(false);
-      setLogoError(true);
-    };
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   return (
     <div className="mb-2">
-      {!logoError && (
-        <h1 className="sr-only">DashKids NFT Collection</h1>
-      )}
-      {!logoError && (
-        <img
-          src={logoUrl}
-          alt="DashKids Logo"
-          className={`max-w-[240px] sm:max-w-[320px] w-full mx-auto transition-opacity duration-300 ${logoLoading || logoError ? "hidden" : "block"}`}
-          onError={() => setLogoError(true)}
-          data-testid="image-logo"
-        />
-      )}
-      {(logoError || logoLoading) && (
-        <h1
-          className="font-bangers text-6xl sm:text-7xl md:text-8xl text-card tracking-[4px]"
-          style={{
-            textShadow: "4px 4px 0 hsl(var(--foreground)), -2px -2px 0 hsl(var(--foreground)), 2px -2px 0 hsl(var(--foreground)), -2px 2px 0 hsl(var(--foreground))"
-          }}
-          data-testid="text-logo"
-        >
-          DASHKIDS
-        </h1>
-      )}
+      <h1 className="sr-only">DashKids NFT Collection</h1>
+      <img
+        src={logoPath}
+        alt="DashKids Logo"
+        className={`max-w-[280px] sm:max-w-[400px] w-full mx-auto transition-opacity duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
+        onLoad={() => setLoading(false)}
+        data-testid="image-logo"
+      />
     </div>
   );
 }
