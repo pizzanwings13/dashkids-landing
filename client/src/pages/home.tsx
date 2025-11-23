@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Zap } from "lucide-react";
-import logoPath from "@assets/dashkids logo_1763857928084.png";
+import logoPath from "@assets/IMG_0481_1763858063584.png";
 
 const galleryImages = [
   {
