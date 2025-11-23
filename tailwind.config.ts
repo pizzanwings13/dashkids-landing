@@ -86,6 +86,8 @@ export default {
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
+        bangers: ["Bangers", "cursive"],
+        nunito: ["Nunito", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
@@ -96,10 +98,21 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        dash: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(200vw)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "dash-1": "dash 2.5s infinite",
+        "dash-2": "dash 2.5s infinite 0.6s",
+        "dash-3": "dash 2.5s infinite 1.1s",
+        "dash-4": "dash 2.5s infinite 0.3s",
+        "dash-5": "dash 2.5s infinite 0.9s",
+        "dash-6": "dash 2.5s infinite 1.4s",
+        "dash-7": "dash 2.5s infinite 0.2s",
       },
     },
   },
