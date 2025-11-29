@@ -1,0 +1,40 @@
+14:47:40.220 Running build in Washington, D.C., USA (East) – iad1
+14:47:40.222 Build machine configuration: 2 cores, 8 GB
+14:47:40.261 Cloning github.com/pizzanwings13/dashkids-landing (Branch: main, Commit: 8b28153)
+14:47:40.270 Skipping build cache, deployment was triggered without cache.
+14:47:41.251 Cloning completed: 990.000ms
+14:47:41.903 Running "vercel build"
+14:47:42.292 Vercel CLI 48.12.0
+14:47:43.216 Installing dependencies...
+14:47:47.450 npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+14:47:47.478 npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+14:47:52.663 
+14:47:52.664 added 477 packages in 9s
+14:47:52.664 
+14:47:52.665 64 packages are looking for funding
+14:47:52.665   run `npm fund` for details
+14:47:52.712 Running "npm run build"
+14:47:52.824 
+14:47:52.825 > rest-express@1.0.0 build
+14:47:52.825 > vite build && esbuild server/index-prod.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js
+14:47:52.825 
+14:47:53.098 [36mvite v5.4.20 [32mbuilding for production...[36m[39m
+14:47:53.168 transforming...
+14:47:54.231 
+14:47:54.232 A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+14:47:56.765 [32m✓[39m 1664 modules transformed.
+14:47:56.966 rendering chunks...
+14:47:56.976 computing gzip size...
+14:47:56.993 [2m../dist/public/[22m[32mindex.html                                       [39m[1m[2m    1.02 kB[22m[1m[22m[2m │ gzip:  0.56 kB[22m
+14:47:56.993 [2m../dist/public/[22m[2massets/[22m[32mdashkids logo_1763859062109-b0YFehH3.png  [39m[1m[2m1,175.70 kB[22m[1m[22m
+14:47:56.993 [2m../dist/public/[22m[2massets/[22m[35mindex-Bcv-eJ5f.css                        [39m[1m[2m   74.06 kB[22m[1m[22m[2m │ gzip: 11.65 kB[22m
+14:47:56.993 [2m../dist/public/[22m[2massets/[22m[36mindex-Dr8knNlp.js                         [39m[1m[2m  272.22 kB[22m[1m[22m[2m │ gzip: 88.74 kB[22m
+14:47:56.993 [32m✓ built in 3.87s[39m
+14:47:57.031 
+14:47:57.031   dist/index.js  2.5kb
+14:47:57.031 
+14:47:57.031 ⚡ Done in 3ms
+14:47:57.107 Build Completed in /vercel/output [14s]
+14:47:57.207 Deploying outputs...
+14:47:59.546 Deployment completed
+14:48:00.165 Creating build cache...
