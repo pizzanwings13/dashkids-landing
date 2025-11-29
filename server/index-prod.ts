@@ -1,25 +1,38 @@
 import fs from "node:fs";
 import path from "node:path";
 import { type Server } from "node:http";
-
 import express, { type Express } from "express";
 import runApp from "./app";
 
 export async function serveStatic(app: Express, _server: Server) {
-  // Use process.cwd() which is reliable in bundled code
-  const distPath = path.join(process.cwd(), "dist", "public");
-
-  if (!fs.existsSync(distPath)) {
-    throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
-    );
+  // Vercel puts dist folder in the root of the deployed project
+  let publicPath = path.join("/tmp/projectRoot", "dist", "public");
+  
+  // Fallback for local testing
+  if (!fs.existsSync(publicPath)) {
+    publicPath = path.join(process.cwd(), "dist", "public");
+  }
+  
+  // Last resort - look relative to this file
+  if (!fs.existsSync(publicPath)) {
+    publicPath = path.join(import.meta.dirname, "..", "public");
   }
 
-  app.use(express.static(distPath));
+  console.log(`[info] Looking for public files at: ${publicPath}`);
+  console.log(`[info] Exists: ${fs.existsSync(publicPath)}`);
+
+  if (fs.existsSync(publicPath)) {
+    app.use(express.static(publicPath));
+  }
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+    const indexPath = path.resolve(publicPath, "index.html");
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).send("Not Found - index.html not found at " + indexPath);
+    }
   });
 }
 
