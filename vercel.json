@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build && cp -r dist/public/* public/",
-  "outputDirectory": "public",
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/public"
 }
