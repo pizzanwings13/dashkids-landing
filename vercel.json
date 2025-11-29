@@ -3,11 +3,5 @@
   "buildCommand": "npm run build",
   "env": {
     "NODE_ENV": "production"
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/[...route]"
-    }
-  ]
+  }
 }

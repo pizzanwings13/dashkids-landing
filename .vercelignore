@@ -1,6 +1,11 @@
-node_modules
 .git
-.env.local
+node_modules
 drizzle
-client
+.env.local
 server
+client
+shared
+postcss.config.js
+tailwind.config.ts
+vite.config.ts
+tsconfig.json
