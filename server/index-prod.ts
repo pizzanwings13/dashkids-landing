@@ -1,16 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { type Server } from "node:http";
 
 import express, { type Express } from "express";
 import runApp from "./app";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 export async function serveStatic(app: Express, _server: Server) {
-  // In production, public files are at dist/public relative to dist/index.js
-  const distPath = path.resolve(__dirname, "..", "public");
+  // Use process.cwd() which is reliable in bundled code
+  const distPath = path.join(process.cwd(), "dist", "public");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(
