@@ -9,11 +9,18 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.coloring-container > div {
+.coloring-container > * {
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
+}
+
+.coloring-header,
+.coloring-main-content {
   background: white;
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
