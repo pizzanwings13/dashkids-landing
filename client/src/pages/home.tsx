@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -164,6 +165,8 @@ function GalleryImage({ src, alt, label }: { src: string; alt: string; label: st
 }
 
 export default function Home() {
+  const [, navigate] = useLocation();
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SpeedLines />
@@ -176,6 +179,13 @@ export default function Home() {
             <span>RUN WITH US</span>
             <Zap className="w-6 h-6 sm:w-7 sm:h-7 fill-foreground" />
           </p>
+          <Button
+            onClick={() => navigate("/coloring")}
+            className="mt-6 min-h-[52px] font-bold text-base border-4 border-foreground shadow-[5px_5px_0_hsl(var(--foreground))] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[3px_3px_0_hsl(var(--foreground))] active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0_hsl(var(--foreground))] transition-all duration-200 bg-primary text-primary-foreground"
+            data-testid="button-coloring-studio"
+          >
+            🎨 Open Coloring Studio
+          </Button>
         </header>
 
         <section className="mb-12" data-testid="about-section">
