@@ -25,9 +25,11 @@ export default function ColoringPage() {
   const [historyStep, setHistoryStep] = useState(-1);
   const [brushSize, setBrushSize] = useState(20);
   const [activeCharacterIndex, setActiveCharacterIndex] = useState(0);
+  const [customCharacters, setCustomCharacters] = useState<Character[]>([]);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const characters: Character[] = [
+  const defaultCharacters: Character[] = [
     { name: "Pose 1", lines: drawCharacter1 },
     { name: "Pose 2", lines: drawCharacter2 },
     { name: "Pose 3", lines: drawCharacter3 },
@@ -43,6 +45,8 @@ export default function ColoringPage() {
     { name: "Pose 13", lines: drawCharacter13 },
     { name: "Pose 14", lines: drawCharacter14 }
   ];
+
+  const allCharacters = [...defaultCharacters, ...customCharacters];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -76,8 +80,50 @@ export default function ColoringPage() {
     
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    characters[index].lines(ctx);
+    allCharacters[index].lines(ctx);
     saveHistory();
+  };
+
+  const handleSVGUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const svgContent = event.target?.result as string;
+      const fileName = file.name.replace(/\.[^/.]+$/, "");
+      
+      const drawSVG = (ctx: CanvasRenderingContext2D) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 700;
+        canvas.height = 700;
+        const tempCtx = canvas.getContext("2d")!;
+        
+        const img = new Image();
+        img.onload = () => {
+          tempCtx.drawImage(img, 0, 0, 700, 700);
+        };
+        img.src = "data:image/svg+xml;base64," + btoa(svgContent);
+        
+        setTimeout(() => {
+          ctx.drawImage(canvas, 0, 0);
+        }, 100);
+      };
+
+      const newCharacter: Character = {
+        name: fileName || "Custom",
+        lines: drawSVG
+      };
+
+      const updated = [...customCharacters, newCharacter];
+      setCustomCharacters(updated);
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    };
+    
+    reader.readAsText(file);
   };
 
   const hexToRgb = (hex: string) => {
@@ -234,7 +280,7 @@ export default function ColoringPage() {
           <div className="coloring-section">
             <h2>📚 Choose Character</h2>
             <div className="character-grid" data-testid="grid-characters">
-              {characters.map((char, i) => (
+              {allCharacters.map((char, i) => (
                 <div
                   key={i}
                   className={`character-thumb ${i === activeCharacterIndex ? "active" : ""}`}
@@ -245,6 +291,22 @@ export default function ColoringPage() {
                 </div>
               ))}
             </div>
+            <button
+              className="tool-btn"
+              onClick={() => fileInputRef.current?.click()}
+              data-testid="button-upload-svg"
+              style={{ marginTop: "10px", width: "100%" }}
+            >
+              ➕ Add SVG
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".svg"
+              onChange={handleSVGUpload}
+              style={{ display: "none" }}
+              data-testid="input-svg-upload"
+            />
           </div>
 
           <div className="coloring-section">
