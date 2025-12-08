@@ -11,6 +11,14 @@ const COLORS = [
   "#000000", "#FFFFFF", "#8B4513", "#FFB6C1"
 ];
 
+const COLOR_NAMES = [
+  "Red", "Turquoise", "Sky Blue", "Light Salmon",
+  "Mint", "Golden Yellow", "Purple", "Light Blue",
+  "Orange", "Green", "Crimson", "Steel Blue",
+  "Coral", "Teal", "Dark Orange", "Dark Slate",
+  "Black", "White", "Brown", "Light Pink"
+];
+
 interface Character {
   name: string;
   imagePath: string;
@@ -48,6 +56,7 @@ export default function ColoringPage() {
   const [historyStep, setHistoryStep] = useState(-1);
   const [brushSize, setBrushSize] = useState(20);
   const [activeCharacterIndex, setActiveCharacterIndex] = useState(0);
+  const [showColorDropdown, setShowColorDropdown] = useState(false);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
   useEffect(() => {
@@ -290,18 +299,37 @@ export default function ColoringPage() {
                 />
               ))}
             </div>
-            <select 
-              className="color-select mobile-only"
-              value={currentColor}
-              onChange={(e) => setCurrentColor(e.target.value)}
-              data-testid="select-color-mobile"
-            >
-              {COLORS.map((color, i) => (
-                <option key={color} value={color}>
-                  Color {i + 1}
-                </option>
-              ))}
-            </select>
+            <div className="color-dropdown-wrapper mobile-only">
+              <button 
+                className="color-dropdown-button"
+                onClick={() => setShowColorDropdown(!showColorDropdown)}
+                style={{ backgroundColor: currentColor }}
+                data-testid="button-color-dropdown"
+              >
+                <span className="color-dropdown-label">{COLOR_NAMES[COLORS.indexOf(currentColor)]}</span>
+              </button>
+              {showColorDropdown && (
+                <div className="color-dropdown-menu" data-testid="menu-color-dropdown">
+                  {COLORS.map((color, i) => (
+                    <button
+                      key={color}
+                      className="color-dropdown-item"
+                      onClick={() => {
+                        setCurrentColor(color);
+                        setShowColorDropdown(false);
+                      }}
+                      data-testid={`button-color-option-${i}`}
+                    >
+                      <div 
+                        className="color-dropdown-swatch" 
+                        style={{ backgroundColor: color }}
+                      />
+                      <span className="color-dropdown-name">{COLOR_NAMES[i]}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="coloring-section">
