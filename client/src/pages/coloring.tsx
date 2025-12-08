@@ -57,11 +57,13 @@ export default function ColoringPage() {
   const [brushSize, setBrushSize] = useState(20);
   const [activeCharacterIndex, setActiveCharacterIndex] = useState(0);
   const [showColorDropdown, setShowColorDropdown] = useState(false);
-  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
+  const [placedEmoji, setPlacedEmoji] = useState<{emoji: string; x: number; y: number; size: number; rotation: number} | null>(null);
+  const [isDraggingEmoji, setIsDraggingEmoji] = useState(false);
+  const [emojiOffset, setEmojiOffset] = useState({x: 0, y: 0});
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
-const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪", "🎭", "🎸"];
+const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️", "⚡", "🌈"];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -73,6 +75,28 @@ const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪",
     ctxRef.current = ctx;
     loadCharacter(0);
   }, []);
+
+  useEffect(() => {
+    if (!placedEmoji || !ctxRef.current || !canvasRef.current) return;
+    const ctx = ctxRef.current;
+    const canvas = canvasRef.current;
+    
+    // Redraw current state with emoji preview
+    if (historyStep >= 0 && history[historyStep]) {
+      ctx.putImageData(history[historyStep], 0, 0);
+    }
+    
+    // Draw emoji preview
+    ctx.save();
+    ctx.translate(placedEmoji.x, placedEmoji.y);
+    ctx.rotate((placedEmoji.rotation * Math.PI) / 180);
+    ctx.font = `${placedEmoji.size}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.fillText(placedEmoji.emoji, 0, 0);
+    ctx.restore();
+  }, [placedEmoji]);
 
   const saveHistory = () => {
     if (!ctxRef.current || !canvasRef.current) return;
@@ -93,7 +117,7 @@ const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪",
     const ctx = ctxRef.current;
     const canvas = canvasRef.current;
     
-    ctx.fillStyle = backgroundColor;
+    ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     const character = CHARACTERS[index];
@@ -197,6 +221,15 @@ const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪",
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const { x, y } = getCanvasCoordinates(e as any);
 
+    if (placedEmoji) {
+      const dist = Math.sqrt(Math.pow(x - placedEmoji.x, 2) + Math.pow(y - placedEmoji.y, 2));
+      if (dist < placedEmoji.size) {
+        setIsDraggingEmoji(true);
+        setEmojiOffset({x: x - placedEmoji.x, y: y - placedEmoji.y});
+        return;
+      }
+    }
+
     if (currentTool === "fill") {
       floodFill(x, y, currentColor);
       saveHistory();
@@ -207,12 +240,23 @@ const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪",
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (isDraggingEmoji && placedEmoji) {
+      const { x, y } = getCanvasCoordinates(e as any);
+      setPlacedEmoji({...placedEmoji, x: x - emojiOffset.x, y: y - emojiOffset.y});
+      return;
+    }
+    
     if (!isDrawing) return;
     const { x, y } = getCanvasCoordinates(e as any);
     draw(x, y);
   };
 
   const handleMouseUp = () => {
+    if (isDraggingEmoji) {
+      setIsDraggingEmoji(false);
+      saveHistory();
+      return;
+    }
     if (isDrawing) {
       setIsDrawing(false);
       saveHistory();
@@ -386,22 +430,6 @@ const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪",
           </div>
 
           <div className="coloring-section">
-            <h2>🎨 Background</h2>
-            <div className="background-picker">
-              {["#FFFFFF", "#F0F0F0", "#FFE5E5", "#E5F5FF", "#FFF9E5", "#E5FFE5"].map((bg) => (
-                <button
-                  key={bg}
-                  className={`bg-color-btn ${backgroundColor === bg ? "active" : ""}`}
-                  style={{ backgroundColor: bg }}
-                  onClick={() => setBackgroundColor(bg)}
-                  data-testid={`button-bg-${bg.slice(1)}`}
-                  title={`Background ${bg}`}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="coloring-section">
             <h2>😊 Emojis</h2>
             <div className="emoji-picker">
               {EMOJIS.map((emoji) => (
@@ -416,23 +444,63 @@ const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪",
               ))}
             </div>
             {selectedEmoji && (
-              <button
-                className="tool-btn"
-                onClick={() => {
-                  if (!ctxRef.current || !canvasRef.current) return;
-                  const ctx = ctxRef.current;
-                  ctx.font = "80px Arial";
-                  ctx.textAlign = "center";
-                  ctx.textBaseline = "middle";
-                  const centerX = canvasRef.current.width / 2;
-                  const centerY = canvasRef.current.height / 2;
-                  ctx.fillText(selectedEmoji, centerX, centerY);
-                  saveHistory();
-                }}
-                data-testid="button-add-emoji"
-              >
-                Add Emoji to Canvas
-              </button>
+              <div className="emoji-controls">
+                <button
+                  className="tool-btn"
+                  onClick={() => {
+                    setPlacedEmoji({emoji: selectedEmoji, x: 350, y: 350, size: 50, rotation: 0});
+                  }}
+                  data-testid="button-add-emoji"
+                >
+                  Add Emoji to Canvas
+                </button>
+                {placedEmoji && placedEmoji.emoji === selectedEmoji && (
+                  <div className="emoji-adjustment-controls">
+                    <label>
+                      Size:
+                      <input
+                        type="range"
+                        min="20"
+                        max="150"
+                        value={placedEmoji.size}
+                        onChange={(e) => setPlacedEmoji({...placedEmoji, size: parseInt(e.target.value)})}
+                        data-testid="input-emoji-size"
+                      />
+                    </label>
+                    <label>
+                      Rotate:
+                      <input
+                        type="range"
+                        min="0"
+                        max="360"
+                        value={placedEmoji.rotation}
+                        onChange={(e) => setPlacedEmoji({...placedEmoji, rotation: parseInt(e.target.value)})}
+                        data-testid="input-emoji-rotation"
+                      />
+                    </label>
+                    <button
+                      className="tool-btn"
+                      onClick={() => {
+                        if (!ctxRef.current || !canvasRef.current) return;
+                        const ctx = ctxRef.current;
+                        ctx.save();
+                        ctx.translate(placedEmoji.x, placedEmoji.y);
+                        ctx.rotate((placedEmoji.rotation * Math.PI) / 180);
+                        ctx.font = `${placedEmoji.size}px Arial`;
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(placedEmoji.emoji, 0, 0);
+                        ctx.restore();
+                        setPlacedEmoji(null);
+                        saveHistory();
+                      }}
+                      data-testid="button-confirm-emoji"
+                    >
+                      Lock Emoji
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
@@ -473,7 +541,7 @@ const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪",
 
         <div className="canvas-area">
           <div className="instructions">
-            <p><strong>How to use:</strong> Pick a character below, choose a color, then click areas to fill or use the brush to draw!</p>
+            <p><strong>How to use:</strong> Pick a character, choose a color, fill or brush to paint. Add emojis, drag to move, adjust size and rotation, then lock!</p>
           </div>
           <canvas
             ref={canvasRef}
