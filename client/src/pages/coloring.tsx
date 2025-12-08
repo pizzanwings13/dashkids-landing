@@ -57,7 +57,11 @@ export default function ColoringPage() {
   const [brushSize, setBrushSize] = useState(20);
   const [activeCharacterIndex, setActiveCharacterIndex] = useState(0);
   const [showColorDropdown, setShowColorDropdown] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
+  const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+
+const EMOJIS = ["😊", "🎨", "⭐", "🌈", "🎉", "❤️", "😂", "🎪", "🎭", "🎸"];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -89,7 +93,7 @@ export default function ColoringPage() {
     const ctx = ctxRef.current;
     const canvas = canvasRef.current;
     
-    ctx.fillStyle = "white";
+    ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     const character = CHARACTERS[index];
@@ -161,23 +165,37 @@ export default function ColoringPage() {
     ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
     
     if (currentTool === "eraser") {
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.fillStyle = backgroundColor;
       ctx.fill();
-      ctx.globalCompositeOperation = "source-over";
     } else {
       ctx.fillStyle = currentColor;
       ctx.fill();
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return { x: 0, y: 0 };
     
     const rect = canvas.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
-    const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+    let clientX = 0, clientY = 0;
+    
+    if ("touches" in e) {
+      clientX = e.touches[0]?.clientX || 0;
+      clientY = e.touches[0]?.clientY || 0;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    
+    const x = Math.floor((clientX - rect.left) * (canvas.width / rect.width));
+    const y = Math.floor((clientY - rect.top) * (canvas.height / rect.height));
+    
+    return { x, y };
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const { x, y } = getCanvasCoordinates(e as any);
 
     if (currentTool === "fill") {
       floodFill(x, y, currentColor);
@@ -188,15 +206,9 @@ export default function ColoringPage() {
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
-    
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const rect = canvas.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
-    const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+    const { x, y } = getCanvasCoordinates(e as any);
     draw(x, y);
   };
 
@@ -374,6 +386,57 @@ export default function ColoringPage() {
           </div>
 
           <div className="coloring-section">
+            <h2>🎨 Background</h2>
+            <div className="background-picker">
+              {["#FFFFFF", "#F0F0F0", "#FFE5E5", "#E5F5FF", "#FFF9E5", "#E5FFE5"].map((bg) => (
+                <button
+                  key={bg}
+                  className={`bg-color-btn ${backgroundColor === bg ? "active" : ""}`}
+                  style={{ backgroundColor: bg }}
+                  onClick={() => setBackgroundColor(bg)}
+                  data-testid={`button-bg-${bg.slice(1)}`}
+                  title={`Background ${bg}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="coloring-section">
+            <h2>😊 Emojis</h2>
+            <div className="emoji-picker">
+              {EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  className={`emoji-btn ${selectedEmoji === emoji ? "active" : ""}`}
+                  onClick={() => setSelectedEmoji(selectedEmoji === emoji ? null : emoji)}
+                  data-testid={`button-emoji-${emoji}`}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+            {selectedEmoji && (
+              <button
+                className="tool-btn"
+                onClick={() => {
+                  if (!ctxRef.current || !canvasRef.current) return;
+                  const ctx = ctxRef.current;
+                  ctx.font = "80px Arial";
+                  ctx.textAlign = "center";
+                  ctx.textBaseline = "middle";
+                  const centerX = canvasRef.current.width / 2;
+                  const centerY = canvasRef.current.height / 2;
+                  ctx.fillText(selectedEmoji, centerX, centerY);
+                  saveHistory();
+                }}
+                data-testid="button-add-emoji"
+              >
+                Add Emoji to Canvas
+              </button>
+            )}
+          </div>
+
+          <div className="coloring-section">
             <h2>⚡ Actions</h2>
             <div className="tool-buttons">
               <button
@@ -417,12 +480,12 @@ export default function ColoringPage() {
             width={700}
             height={700}
             className="coloring-canvas"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
+            onMouseDown={handleMouseDown as any}
+            onMouseMove={handleMouseMove as any}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
-            onTouchStart={handleMouseDown}
-            onTouchMove={handleMouseMove}
+            onTouchStart={handleMouseDown as any}
+            onTouchMove={handleMouseMove as any}
             onTouchEnd={handleMouseUp}
             data-testid="canvas-coloring"
           />

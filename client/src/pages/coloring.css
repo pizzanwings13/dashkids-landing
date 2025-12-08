@@ -358,6 +358,59 @@
   text-transform: capitalize;
 }
 
+.background-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.bg-color-btn {
+  aspect-ratio: 1;
+  border: 3px solid #555;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bg-color-btn:hover {
+  transform: scale(1.1);
+  border-color: #777;
+}
+
+.bg-color-btn.active {
+  border-color: #4ECDC4;
+  box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+  border-width: 4px;
+}
+
+.emoji-picker {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.emoji-btn {
+  padding: 10px;
+  font-size: 1.8em;
+  background: #383850;
+  border: 2px solid #4a4a6e;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.emoji-btn:hover {
+  background: #424260;
+  transform: scale(1.1);
+}
+
+.emoji-btn.active {
+  background: #4a4a6e;
+  border-color: #4ECDC4;
+  box-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
+}
+
 @media (max-width: 968px) {
   .coloring-main-content {
     grid-template-columns: 1fr;
