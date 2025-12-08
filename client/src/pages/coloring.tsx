@@ -254,7 +254,6 @@ const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️"
   const handleMouseUp = () => {
     if (isDraggingEmoji) {
       setIsDraggingEmoji(false);
-      saveHistory();
       return;
     }
     if (isDrawing) {
