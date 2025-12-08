@@ -17,20 +17,26 @@ interface Character {
 }
 
 const CHARACTERS: Character[] = [
-  { name: "Pose 1", imagePath: "/characters/character-1.png" },
-  { name: "Pose 2", imagePath: "/characters/character-2.png" },
-  { name: "Pose 3", imagePath: "/characters/character-3.png" },
-  { name: "Pose 4", imagePath: "/characters/character-4.png" },
-  { name: "Pose 5", imagePath: "/characters/character-5.png" },
-  { name: "Pose 6", imagePath: "/characters/character-6.png" },
-  { name: "Pose 7", imagePath: "/characters/character-7.png" },
-  { name: "Pose 8", imagePath: "/characters/character-8.png" },
-  { name: "Pose 9", imagePath: "/characters/character-9.png" },
-  { name: "Pose 10", imagePath: "/characters/character-10.png" },
-  { name: "Pose 11", imagePath: "/characters/character-11.png" },
-  { name: "Pose 12", imagePath: "/characters/character-12.png" },
-  { name: "Pose 13", imagePath: "/characters/character-13.png" },
-  { name: "Pose 14", imagePath: "/characters/character-14.png" }
+  { name: "King", imagePath: "/characters/992_1765215703888.png" },
+  { name: "Construction", imagePath: "/characters/993_1765215703889.png" },
+  { name: "Red Hair", imagePath: "/characters/994_1765215703890.png" },
+  { name: "Basketball", imagePath: "/characters/990_1765215703891.png" },
+  { name: "Baseball", imagePath: "/characters/991_1765215703892.png" },
+  { name: "Crown Green", imagePath: "/characters/913_1765215715464.png" },
+  { name: "Safari", imagePath: "/characters/914_1765215715466.png" },
+  { name: "Red Hat", imagePath: "/characters/915_1765215715467.png" },
+  { name: "LA Cap", imagePath: "/characters/916_1765215715468.png" },
+  { name: "Tongue Out", imagePath: "/characters/97_1765215715469.png" },
+  { name: "Sticky", imagePath: "/characters/880_1765215754474.png" },
+  { name: "Orange Shirt", imagePath: "/characters/881_1765215754476.png" },
+  { name: "Alligator", imagePath: "/characters/882_1765215754478.png" },
+  { name: "Green Shirt", imagePath: "/characters/878_1765215754479.png" },
+  { name: "Blonde Hair", imagePath: "/characters/879_1765215754481.png" },
+  { name: "Navy Captain", imagePath: "/characters/896_1765215764566.png" },
+  { name: "VR Goggles", imagePath: "/characters/899_1765215771574.png" },
+  { name: "Spiky Hair", imagePath: "/characters/817_1765215786885.png" },
+  { name: "Lightning Power", imagePath: "/characters/845_1765215794486.png" },
+  { name: "Scared", imagePath: "/characters/728_1765215801848.png" }
 ];
 
 export default function ColoringPage() {
