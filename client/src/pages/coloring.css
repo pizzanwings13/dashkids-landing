@@ -236,15 +236,113 @@
 @media (max-width: 968px) {
   .coloring-main-content {
     grid-template-columns: 1fr;
+    padding: 15px;
   }
 
   .coloring-header h1 {
     font-size: 1.8em;
   }
 
+  .coloring-header {
+    padding: 20px;
+  }
+
+  .back-button {
+    left: 10px;
+    top: 10px;
+    padding: 6px 10px;
+    font-size: 0.9em;
+  }
+
   .character-grid {
     grid-template-columns: repeat(4, 1fr);
     max-height: none;
+  }
+
+  .coloring-canvas {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 640px) {
+  .coloring-container {
+    padding: 10px;
+  }
+
+  .coloring-header h1 {
+    font-size: 1.4em;
+  }
+
+  .coloring-subtitle {
+    font-size: 0.95em;
+  }
+
+  .coloring-main-content {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 10px;
+  }
+
+  .coloring-sidebar {
+    gap: 15px;
+  }
+
+  .coloring-section {
+    padding: 12px;
+  }
+
+  .coloring-section h2 {
+    font-size: 0.95em;
+  }
+
+  .character-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-height: 300px;
+  }
+
+  .character-name {
+    font-size: 0.7em;
+  }
+
+  .color-palette {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .tool-btn, .action-btn {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+
+  .brush-size {
+    gap: 8px;
+  }
+
+  .brush-size span {
+    font-size: 0.85em;
+  }
+
+  .canvas-area {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .coloring-canvas {
+    max-width: 100%;
+    height: auto;
+    max-height: 400px;
+  }
+
+  .instructions {
+    padding: 12px;
+    font-size: 0.9em;
+  }
+
+  .instructions p {
+    font-size: 0.85em;
   }
 }
 

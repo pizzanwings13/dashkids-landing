@@ -28,15 +28,15 @@ const CHARACTERS: Character[] = [
   { name: "LA Cap", imagePath: "/characters/916_1765215715468.png" },
   { name: "Tongue Out", imagePath: "/characters/97_1765215715469.png" },
   { name: "Sticky", imagePath: "/characters/880_1765215754474.png" },
-  { name: "Orange Shirt", imagePath: "/characters/881_1765215754476.png" },
-  { name: "Alligator", imagePath: "/characters/882_1765215754478.png" },
+  { name: "Gator Hat", imagePath: "/characters/881_1765215754476.png" },
+  { name: "LA cap 2", imagePath: "/characters/882_1765215754478.png" },
   { name: "Green Shirt", imagePath: "/characters/878_1765215754479.png" },
   { name: "Blonde Hair", imagePath: "/characters/879_1765215754481.png" },
   { name: "Navy Captain", imagePath: "/characters/896_1765215764566.png" },
   { name: "VR Goggles", imagePath: "/characters/899_1765215771574.png" },
   { name: "Spiky Hair", imagePath: "/characters/817_1765215786885.png" },
   { name: "Lightning Power", imagePath: "/characters/845_1765215794486.png" },
-  { name: "Scared", imagePath: "/characters/728_1765215801848.png" }
+  { name: "Scream Mask", imagePath: "/characters/728_1765215801848.png" }
 ];
 
 export default function ColoringPage() {
