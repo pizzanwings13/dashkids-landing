@@ -150,8 +150,16 @@ export default function ColoringPage() {
     const ctx = ctxRef.current;
     ctx.beginPath();
     ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
-    ctx.fillStyle = currentTool === "eraser" ? "white" : currentColor;
-    ctx.fill();
+    
+    if (currentTool === "eraser") {
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    } else {
+      ctx.fillStyle = currentColor;
+      ctx.fill();
+    }
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
