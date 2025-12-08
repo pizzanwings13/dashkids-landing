@@ -228,6 +228,7 @@
   cursor: crosshair;
   box-shadow: 0 5px 20px rgba(0,0,0,0.3);
   background: white;
+  touch-action: none;
 }
 
 .brush-size {
@@ -239,6 +240,44 @@
 
 .brush-size input {
   flex: 1;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.character-select,
+.color-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #4a4a6e;
+  background: #383850;
+  color: #e0e0e0;
+  font-size: 1em;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.character-select:hover,
+.color-select:hover {
+  background: #424260;
+  border-color: #5a5a7e;
+}
+
+.character-select:focus,
+.color-select:focus {
+  outline: none;
+  border-color: #4ECDC4;
+  box-shadow: 0 0 8px rgba(78, 205, 196, 0.3);
+}
+
+.character-select option,
+.color-select option {
+  background: #2a2a3e;
+  color: #e0e0e0;
 }
 
 @media (max-width: 968px) {
@@ -306,18 +345,19 @@
   }
 
   .character-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    max-height: 300px;
+    display: none;
+  }
+
+  .color-palette {
+    display: none;
+  }
+
+  .mobile-only {
+    display: block;
   }
 
   .character-name {
     font-size: 0.7em;
-  }
-
-  .color-palette {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
   }
 
   .tool-btn, .action-btn {

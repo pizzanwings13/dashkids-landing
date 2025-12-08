@@ -265,6 +265,16 @@ export default function ColoringPage() {
                 </div>
               ))}
             </div>
+            <select 
+              className="character-select mobile-only"
+              value={activeCharacterIndex}
+              onChange={(e) => loadCharacter(parseInt(e.target.value))}
+              data-testid="select-character-mobile"
+            >
+              {CHARACTERS.map((char, i) => (
+                <option key={i} value={i}>{char.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="coloring-section">
@@ -280,6 +290,18 @@ export default function ColoringPage() {
                 />
               ))}
             </div>
+            <select 
+              className="color-select mobile-only"
+              value={currentColor}
+              onChange={(e) => setCurrentColor(e.target.value)}
+              data-testid="select-color-mobile"
+            >
+              {COLORS.map((color, i) => (
+                <option key={color} value={color}>
+                  Color {i + 1}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="coloring-section">
@@ -371,6 +393,9 @@ export default function ColoringPage() {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
+            onTouchStart={handleMouseDown}
+            onTouchMove={handleMouseMove}
+            onTouchEnd={handleMouseUp}
             data-testid="canvas-coloring"
           />
         </div>
