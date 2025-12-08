@@ -61,6 +61,7 @@ export default function ColoringPage() {
   const [placedEmoji, setPlacedEmoji] = useState<{emoji: string; x: number; y: number; size: number; rotation: number} | null>(null);
   const [isDraggingEmoji, setIsDraggingEmoji] = useState(false);
   const [emojiOffset, setEmojiOffset] = useState({x: 0, y: 0});
+  const [canvasBeforeEmoji, setCanvasBeforeEmoji] = useState<ImageData | null>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
 const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️", "⚡", "🌈"];
@@ -77,14 +78,11 @@ const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️"
   }, []);
 
   useEffect(() => {
-    if (!placedEmoji || !ctxRef.current || !canvasRef.current) return;
+    if (!placedEmoji || !ctxRef.current || !canvasRef.current || !canvasBeforeEmoji) return;
     const ctx = ctxRef.current;
-    const canvas = canvasRef.current;
     
-    // Redraw current state with emoji preview
-    if (historyStep >= 0 && history[historyStep]) {
-      ctx.putImageData(history[historyStep], 0, 0);
-    }
+    // Restore clean canvas state before emoji was added
+    ctx.putImageData(canvasBeforeEmoji, 0, 0);
     
     // Draw emoji preview
     ctx.save();
@@ -96,7 +94,7 @@ const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️"
     ctx.fillStyle = "rgba(0,0,0,0.5)";
     ctx.fillText(placedEmoji.emoji, 0, 0);
     ctx.restore();
-  }, [placedEmoji]);
+  }, [placedEmoji, canvasBeforeEmoji]);
 
   const saveHistory = () => {
     if (!ctxRef.current || !canvasRef.current) return;
@@ -447,6 +445,10 @@ const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️"
                 <button
                   className="tool-btn"
                   onClick={() => {
+                    if (ctxRef.current && canvasRef.current) {
+                      const imageData = ctxRef.current.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+                      setCanvasBeforeEmoji(imageData);
+                    }
                     setPlacedEmoji({emoji: selectedEmoji, x: 350, y: 350, size: 50, rotation: 0});
                   }}
                   data-testid="button-add-emoji"
@@ -491,6 +493,7 @@ const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️"
                         ctx.fillText(placedEmoji.emoji, 0, 0);
                         ctx.restore();
                         setPlacedEmoji(null);
+                        setCanvasBeforeEmoji(null);
                         saveHistory();
                       }}
                       data-testid="button-confirm-emoji"
