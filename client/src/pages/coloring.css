@@ -417,52 +417,6 @@
   min-width: 100px;
 }
 
-.text-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.text-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #4a4a6e;
-  background: #383850;
-  color: #e0e0e0;
-  font-size: 1em;
-  font-family: inherit;
-  transition: all 0.2s;
-}
-
-.text-input:focus {
-  outline: none;
-  border-color: #4ECDC4;
-  box-shadow: 0 0 8px rgba(78, 205, 196, 0.3);
-}
-
-.text-size {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #e0e0e0;
-  font-size: 0.9em;
-}
-
-.text-size label {
-  flex-shrink: 0;
-}
-
-.text-size-slider {
-  flex: 1;
-  min-width: 80px;
-}
-
-.text-size span {
-  min-width: 40px;
-  text-align: right;
-}
-
 @media (max-width: 968px) {
   .coloring-main-content {
     grid-template-columns: 1fr;
@@ -602,28 +556,6 @@
 
   .emoji-adjustment-controls input {
     min-width: 80px;
-  }
-
-  .text-controls {
-    gap: 10px;
-  }
-
-  .text-input {
-    padding: 8px;
-    font-size: 0.95em;
-  }
-
-  .text-size {
-    gap: 6px;
-    font-size: 0.85em;
-  }
-
-  .text-size-slider {
-    min-width: 60px;
-  }
-
-  .text-size span {
-    min-width: 35px;
   }
 }
 

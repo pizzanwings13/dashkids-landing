@@ -62,8 +62,6 @@ export default function ColoringPage() {
   const [isDraggingEmoji, setIsDraggingEmoji] = useState(false);
   const [emojiOffset, setEmojiOffset] = useState({x: 0, y: 0});
   const [canvasBeforeEmoji, setCanvasBeforeEmoji] = useState<ImageData | null>(null);
-  const [textInput, setTextInput] = useState("");
-  const [textSize, setTextSize] = useState(32);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
 const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️", "⚡", "🌈"];
@@ -425,50 +423,6 @@ const EMOJIS = ["⭐", "🔥", "💯", "😎", "😍", "🌀", "💥", "🕊️"
                   <span>{brushSize}</span>
                 </div>
               )}
-            </div>
-          </div>
-
-          <div className="coloring-section">
-            <h2>📝 Add Text</h2>
-            <div className="text-controls">
-              <input
-                type="text"
-                placeholder="Enter text..."
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                className="text-input"
-                data-testid="input-text"
-              />
-              <div className="text-size">
-                <label>Size:</label>
-                <input
-                  type="range"
-                  min="12"
-                  max="80"
-                  value={textSize}
-                  onChange={(e) => setTextSize(parseInt(e.target.value))}
-                  className="text-size-slider"
-                  data-testid="input-text-size"
-                />
-                <span>{textSize}px</span>
-              </div>
-              <button
-                className="tool-btn"
-                onClick={() => {
-                  if (!ctxRef.current || !canvasRef.current || !textInput) return;
-                  const ctx = ctxRef.current;
-                  ctx.font = `${textSize}px Arial, sans-serif`;
-                  ctx.fillStyle = currentColor;
-                  ctx.textAlign = "center";
-                  ctx.textBaseline = "middle";
-                  ctx.fillText(textInput, 350, 350);
-                  saveHistory();
-                  setTextInput("");
-                }}
-                data-testid="button-add-text"
-              >
-                Add Text to Canvas
-              </button>
             </div>
           </div>
 
