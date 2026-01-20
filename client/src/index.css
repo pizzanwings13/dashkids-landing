@@ -202,85 +202,69 @@
 /* Animated glow blobs */
 .gradient-blob {
   position: fixed;
-  width: 400px;
-  height: 400px;
+  width: 50vw;
+  height: 50vw;
+  max-width: 600px;
+  max-height: 600px;
   border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.4;
+  filter: blur(100px);
+  opacity: 0.5;
   pointer-events: none;
   z-index: 1;
-}
-
-@media (min-width: 640px) {
-  .gradient-blob {
-    width: 700px;
-    height: 700px;
-    filter: blur(80px);
-    opacity: 0.35;
-  }
+  will-change: transform;
 }
 
 .blob-pink {
-  background: #FF1493;
-  top: 5%;
-  left: 5%;
-  animation: float-pink 15s ease-in-out infinite;
+  background: radial-gradient(circle, #FF1493 0%, #FF69B4 50%, transparent 70%);
+  top: -10%;
+  left: -10%;
+  animation: float-blob-1 12s ease-in-out infinite;
 }
 
 .blob-blue {
-  background: #00BFFF;
-  bottom: 10%;
-  right: 5%;
-  animation: float-blue 15s ease-in-out infinite;
+  background: radial-gradient(circle, #00BFFF 0%, #1E90FF 50%, transparent 70%);
+  bottom: -10%;
+  right: -10%;
+  animation: float-blob-2 14s ease-in-out infinite;
 }
 
 .blob-purple {
-  background: #8B00FF;
-  top: 35%;
-  left: 45%;
-  transform: translate(-50%, -50%);
-  animation: float-purple 15s ease-in-out infinite;
+  background: radial-gradient(circle, #9B30FF 0%, #8B00FF 50%, transparent 70%);
+  top: 30%;
+  left: 30%;
+  animation: float-blob-3 16s ease-in-out infinite;
 }
 
-@keyframes float-pink {
+@keyframes float-blob-1 {
   0%, 100% {
     transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(50px, 30px) scale(1.1);
-  }
-  50% {
-    transform: translate(20px, 60px) scale(0.95);
-  }
-  75% {
-    transform: translate(-30px, 40px) scale(1.05);
-  }
-}
-
-@keyframes float-blue {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(-40px, -20px) scale(1.05);
-  }
-  50% {
-    transform: translate(-60px, -50px) scale(1.15);
-  }
-  75% {
-    transform: translate(-20px, -30px) scale(0.9);
-  }
-}
-
-@keyframes float-purple {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
   }
   33% {
-    transform: translate(-45%, -55%) scale(1.1);
+    transform: translate(30px, 50px) scale(1.1);
   }
   66% {
-    transform: translate(-55%, -45%) scale(0.9);
+    transform: translate(-20px, 30px) scale(0.9);
+  }
+}
+
+@keyframes float-blob-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-40px, -30px) scale(1.15);
+  }
+  66% {
+    transform: translate(-20px, -50px) scale(0.85);
+  }
+}
+
+@keyframes float-blob-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(40px, -30px) scale(1.2);
   }
 }
 
