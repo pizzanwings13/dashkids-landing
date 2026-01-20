@@ -278,12 +278,22 @@ function CharacterRunner() {
 
 export default function Home() {
   const [hasEntered, setHasEntered] = useState(false);
+  const [audioStarted, setAudioStarted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
+  useEffect(() => {
+    if (audioRef.current && !audioStarted) {
+      audioRef.current.play()
+        .then(() => setAudioStarted(true))
+        .catch(() => {});
+    }
+  }, [audioStarted]);
+
   const handleEnter = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch(() => {
-      });
+    if (audioRef.current && !audioStarted) {
+      audioRef.current.play()
+        .then(() => setAudioStarted(true))
+        .catch(() => {});
     }
     setHasEntered(true);
   };
@@ -292,18 +302,18 @@ export default function Home() {
     const handleVisibilityChange = () => {
       if (document.hidden && audioRef.current) {
         audioRef.current.pause();
-      } else if (!document.hidden && audioRef.current && hasEntered) {
+      } else if (!document.hidden && audioRef.current && audioStarted) {
         audioRef.current.play().catch(() => {});
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [hasEntered]);
+  }, [audioStarted]);
 
   return (
     <div className="min-h-screen bg-background dot-grid-bg overflow-x-hidden">
-      <audio ref={audioRef} src="/song.mp3" loop />
+      <audio ref={audioRef} src="/song.mp3" loop preload="auto" />
       
       {!hasEntered && <LoadingPortal onEnter={handleEnter} />}
       
