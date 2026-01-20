@@ -202,13 +202,21 @@
 /* Animated glow blobs */
 .gradient-blob {
   position: fixed;
-  width: 600px;
-  height: 600px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
-  filter: blur(150px);
+  filter: blur(80px);
   opacity: 0.15;
   pointer-events: none;
   z-index: 1;
+}
+
+@media (min-width: 640px) {
+  .gradient-blob {
+    width: 600px;
+    height: 600px;
+    filter: blur(150px);
+  }
 }
 
 .blob-pink {

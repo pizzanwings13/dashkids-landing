@@ -133,7 +133,7 @@ function LoadingPortal({ onEnter }: { onEnter: () => void }) {
       
       <button
         onClick={handleEnter}
-        className="px-12 py-5 text-2xl sm:text-3xl font-bold font-fredoka bg-[#00FF7F] text-black border-[5px] border-black rounded-full animate-pulse-glow cursor-pointer uppercase tracking-[2px] mb-4"
+        className="px-8 py-4 sm:px-12 sm:py-5 text-xl sm:text-3xl font-bold font-fredoka bg-[#00FF7F] text-black border-[4px] sm:border-[5px] border-black rounded-full animate-pulse-glow cursor-pointer uppercase tracking-[2px] mb-4"
         data-testid="button-enter"
       >
         ENTER
@@ -171,12 +171,12 @@ function StyleSwapper() {
   const styles: (keyof typeof styleImages)[] = ["DASHING", "CHILLIN", "PORTRAIT", "ANIMATED"];
 
   return (
-    <section className="flex flex-col items-center py-12" data-testid="style-swapper-section">
-      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center uppercase tracking-[2px]">
+    <section className="flex flex-col items-center py-8 sm:py-12" data-testid="style-swapper-section">
+      <h2 className="text-2xl sm:text-4xl font-bold font-fredoka mb-6 sm:mb-8 text-center uppercase tracking-[2px] px-4">
         Choose Your Style
       </h2>
       
-      <div className="w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] border-[5px] border-black rounded-2xl overflow-hidden neo-brutal-shadow bg-card mb-8" data-testid="style-swapper-container">
+      <div className="w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] border-[4px] sm:border-[5px] border-black rounded-2xl overflow-hidden neo-brutal-shadow bg-card mb-6 sm:mb-8" data-testid="style-swapper-container">
         <img
           ref={imageRef}
           src={styleImages[currentStyle]}
@@ -186,12 +186,12 @@ function StyleSwapper() {
         />
       </div>
       
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-2">
         {styles.map((style) => (
           <button
             key={style}
             onClick={() => handleStyleChange(style)}
-            className={`px-6 py-3 text-base sm:text-lg font-bold font-fredoka border-[5px] border-black rounded-full cursor-pointer neo-brutal-shadow uppercase tracking-[1px] ${
+            className={`px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-lg font-bold font-fredoka border-[3px] sm:border-[5px] border-black rounded-full cursor-pointer neo-brutal-shadow uppercase tracking-[1px] ${
               styleButtonColors[style]
             } ${currentStyle === style ? "text-black" : "text-black"}`}
             data-testid={`button-style-${style.toLowerCase()}`}
@@ -206,12 +206,12 @@ function StyleSwapper() {
 
 function NavigationHub() {
   return (
-    <section className="py-12 px-4" data-testid="navigation-hub-section">
-      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center uppercase tracking-[2px]">
+    <section className="py-8 sm:py-12 px-4" data-testid="navigation-hub-section">
+      <h2 className="text-2xl sm:text-4xl font-bold font-fredoka mb-6 sm:mb-8 text-center uppercase tracking-[2px]">
         Explore DashKids
       </h2>
       
-      <div className="grid grid-cols-2 gap-6 sm:gap-8 max-w-2xl mx-auto">
+      <div className="grid grid-cols-2 gap-3 sm:gap-8 max-w-2xl mx-auto">
         {navCards.map((card) => {
           const IconComponent = card.icon;
           return (
@@ -220,11 +220,11 @@ function NavigationHub() {
               href={card.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`${card.color} aspect-square flex flex-col items-center justify-center gap-3 border-[5px] border-black rounded-2xl neo-brutal-shadow cursor-pointer p-4`}
+              className={`${card.color} aspect-square flex flex-col items-center justify-center gap-2 sm:gap-3 border-[3px] sm:border-[5px] border-black rounded-xl sm:rounded-2xl neo-brutal-shadow cursor-pointer p-3 sm:p-4`}
               data-testid={`card-${card.title.toLowerCase()}`}
             >
-              <IconComponent className="w-12 h-12 sm:w-16 sm:h-16 text-black" strokeWidth={2.5} />
-              <span className="text-lg sm:text-xl font-bold font-fredoka text-black text-center uppercase tracking-[1px]">
+              <IconComponent className="w-10 h-10 sm:w-16 sm:h-16 text-black" strokeWidth={2.5} />
+              <span className="text-sm sm:text-xl font-bold font-fredoka text-black text-center uppercase tracking-[1px]">
                 {card.title}
               </span>
             </a>
@@ -237,19 +237,19 @@ function NavigationHub() {
 
 function SocialDock() {
   return (
-    <section className="py-12" data-testid="social-dock-section">
-      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center uppercase tracking-[2px]">
+    <section className="py-8 sm:py-12" data-testid="social-dock-section">
+      <h2 className="text-2xl sm:text-4xl font-bold font-fredoka mb-6 sm:mb-8 text-center uppercase tracking-[2px] px-4">
         Connect With Us
       </h2>
       
-      <div className="flex justify-center gap-4 sm:gap-6">
+      <div className="flex justify-center gap-3 sm:gap-6 flex-wrap px-4">
         {socialLinks.map((link) => (
           <a
             key={link.label}
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-white border-[5px] border-black rounded-full neo-brutal-shadow cursor-pointer text-black"
+            className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center bg-white border-[3px] sm:border-[5px] border-black rounded-full neo-brutal-shadow cursor-pointer text-black"
             aria-label={link.label}
             data-testid={`social-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
           >
@@ -330,14 +330,14 @@ export default function Home() {
       {!hasEntered && <LoadingPortal onEnter={handleEnter} />}
       
       <div className="max-w-4xl mx-auto px-4 content-layer">
-        <header className="pt-8 pb-4 text-center" data-testid="header-section">
+        <header className="pt-6 sm:pt-8 pb-4 text-center" data-testid="header-section">
           <img
             src={logoPath}
             alt="DashKids Logo"
-            className="w-48 sm:w-64 mx-auto mb-4"
+            className="w-40 sm:w-64 mx-auto mb-3 sm:mb-4"
             data-testid="main-logo"
           />
-          <p className="text-xl sm:text-2xl font-bold font-fredoka text-muted-foreground uppercase tracking-[2px]" data-testid="text-tagline">
+          <p className="text-base sm:text-2xl font-bold font-fredoka text-muted-foreground uppercase tracking-[1px] sm:tracking-[2px] px-4" data-testid="text-tagline">
             1,555 Unique Characters Running Wild
           </p>
         </header>
