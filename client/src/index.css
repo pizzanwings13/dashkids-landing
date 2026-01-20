@@ -202,42 +202,42 @@
 /* Animated glow blobs */
 .gradient-blob {
   position: fixed;
-  width: 300px;
-  height: 300px;
+  width: 400px;
+  height: 400px;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.25;
+  filter: blur(60px);
+  opacity: 0.4;
   pointer-events: none;
   z-index: 1;
 }
 
 @media (min-width: 640px) {
   .gradient-blob {
-    width: 600px;
-    height: 600px;
-    filter: blur(120px);
-    opacity: 0.2;
+    width: 700px;
+    height: 700px;
+    filter: blur(80px);
+    opacity: 0.35;
   }
 }
 
 .blob-pink {
-  background: #FF69B4;
-  top: -100px;
-  left: -100px;
+  background: #FF1493;
+  top: 5%;
+  left: 5%;
   animation: float-pink 15s ease-in-out infinite;
 }
 
 .blob-blue {
   background: #00BFFF;
-  bottom: -100px;
-  right: -100px;
+  bottom: 10%;
+  right: 5%;
   animation: float-blue 15s ease-in-out infinite;
 }
 
 .blob-purple {
-  background: #9B30FF;
-  top: 40%;
-  left: 50%;
+  background: #8B00FF;
+  top: 35%;
+  left: 45%;
   transform: translate(-50%, -50%);
   animation: float-purple 15s ease-in-out infinite;
 }
