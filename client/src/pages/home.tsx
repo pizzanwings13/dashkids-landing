@@ -96,35 +96,48 @@ const characterImages = [
 ];
 
 function LoadingPortal({ onEnter }: { onEnter: () => void }) {
+  const [isFlashing, setIsFlashing] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
   const handleEnter = () => {
-    setIsExiting(true);
+    setIsFlashing(true);
     setTimeout(() => {
-      onEnter();
-    }, 800);
+      setIsExiting(true);
+      setTimeout(() => {
+        onEnter();
+      }, 100);
+    }, 300);
   };
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-white transition-transform duration-700 ease-in-out ${
-        isExiting ? "-translate-y-full" : "translate-y-0"
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center portal-bg transition-opacity duration-300 ${
+        isExiting ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       data-testid="loading-portal"
     >
+      {isFlashing && (
+        <div className="fixed inset-0 bg-white flash-overlay z-[60]" data-testid="flash-overlay" />
+      )}
+      
       <img
         src={logoPath}
         alt="DashKids Logo"
-        className="w-64 sm:w-80 mb-8"
+        className="w-64 sm:w-80 mb-8 logo-glow"
         data-testid="portal-logo"
       />
+      
       <button
         onClick={handleEnter}
-        className="px-12 py-5 text-2xl sm:text-3xl font-bold font-fredoka bg-[#32CD32] text-black border-[5px] border-black rounded-full neo-brutal-shadow animate-bounce-slow cursor-pointer uppercase tracking-[2px]"
+        className="px-12 py-5 text-2xl sm:text-3xl font-bold font-fredoka bg-[#00FF7F] text-black border-[5px] border-black rounded-full animate-pulse-glow cursor-pointer uppercase tracking-[2px] mb-4"
         data-testid="button-enter"
       >
         ENTER
       </button>
+      
+      <p className="text-xs sm:text-sm text-gray-500 uppercase tracking-[3px] font-fredoka" data-testid="text-beats-hint">
+        SICK BEATS INSIDE
+      </p>
     </div>
   );
 }

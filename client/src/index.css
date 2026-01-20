@@ -188,6 +188,46 @@
   background-size: 20px 20px;
 }
 
+.portal-bg {
+  background: radial-gradient(ellipse at center, rgba(75, 0, 130, 0.3) 0%, #0a0a0a 70%);
+  background-color: #0a0a0a;
+}
+
+.logo-glow {
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(0, 255, 127, 0.6), 8px 8px 0px 0px #000000;
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(0, 255, 127, 0.8), 8px 8px 0px 0px #000000;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes flash-white {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.flash-overlay {
+  animation: flash-white 0.3s ease-out forwards;
+}
+
 .neo-brutal-shadow {
   box-shadow: 8px 8px 0px 0px #000000;
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
