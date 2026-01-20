@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Rocket, Gamepad2, Trophy, Puzzle } from "lucide-react";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
 
 const styleImages = {
@@ -12,24 +13,35 @@ const navCards = [
   {
     title: "MARKETPLACE",
     href: "https://dashkidsmp.xyz",
-    color: "bg-[hsl(140,70%,45%)]",
+    color: "bg-[#32CD32]",
+    icon: Rocket,
   },
   {
     title: "GAMES",
     href: "https://tokenrush.live",
-    color: "bg-[hsl(200,90%,50%)]",
+    color: "bg-[#00BFFF]",
+    icon: Gamepad2,
   },
   {
     title: "STAKING",
     href: "https://dashkids.vercel.app/",
-    color: "bg-[hsl(330,85%,55%)]",
+    color: "bg-[#FF69B4]",
+    icon: Trophy,
   },
   {
     title: "PLAYGROUND",
     href: "https://playground.w3lp.io/collection/dashkids",
-    color: "bg-[hsl(30,95%,55%)]",
+    color: "bg-[#FF8C00]",
+    icon: Puzzle,
   },
 ];
+
+const styleButtonColors = {
+  DASHING: "bg-[#32CD32]",
+  CHILLIN: "bg-[#00BFFF]",
+  PORTRAIT: "bg-[#FF69B4]",
+  ANIMATED: "bg-[#FF8C00]",
+};
 
 const socialLinks = [
   {
@@ -108,7 +120,7 @@ function LoadingPortal({ onEnter }: { onEnter: () => void }) {
       />
       <button
         onClick={handleEnter}
-        className="px-12 py-5 text-2xl sm:text-3xl font-bold font-fredoka bg-[hsl(140,70%,45%)] text-white border-4 border-foreground rounded-2xl neo-brutal-shadow animate-bounce-slow hover-elevate active-elevate-2 cursor-pointer"
+        className="px-12 py-5 text-2xl sm:text-3xl font-bold font-fredoka bg-[#32CD32] text-black border-[5px] border-black rounded-full neo-brutal-shadow animate-bounce-slow cursor-pointer uppercase tracking-[2px]"
         data-testid="button-enter"
       >
         ENTER
@@ -143,11 +155,11 @@ function StyleSwapper() {
 
   return (
     <section className="flex flex-col items-center py-12" data-testid="style-swapper-section">
-      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center">
+      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center uppercase tracking-[2px]">
         Choose Your Style
       </h2>
       
-      <div className="w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] border-4 border-foreground rounded-2xl overflow-hidden neo-brutal-shadow bg-card mb-8">
+      <div className="w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] border-[5px] border-black rounded-2xl overflow-hidden neo-brutal-shadow bg-card mb-8">
         <img
           ref={imageRef}
           src={styleImages[currentStyle]}
@@ -162,11 +174,9 @@ function StyleSwapper() {
           <button
             key={style}
             onClick={() => handleStyleChange(style)}
-            className={`px-5 py-3 text-base sm:text-lg font-bold font-fredoka border-4 border-foreground rounded-xl cursor-pointer hover-elevate active-elevate-2 ${
-              currentStyle === style
-                ? "bg-foreground text-background neo-brutal-shadow"
-                : "bg-card text-foreground neo-brutal-shadow"
-            }`}
+            className={`px-6 py-3 text-base sm:text-lg font-bold font-fredoka border-[5px] border-black rounded-full cursor-pointer neo-brutal-shadow uppercase tracking-[1px] ${
+              styleButtonColors[style]
+            } ${currentStyle === style ? "text-black" : "text-black"}`}
             data-testid={`button-style-${style.toLowerCase()}`}
           >
             {style}
@@ -180,25 +190,29 @@ function StyleSwapper() {
 function NavigationHub() {
   return (
     <section className="py-12 px-4" data-testid="navigation-hub-section">
-      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center">
+      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center uppercase tracking-[2px]">
         Explore DashKids
       </h2>
       
-      <div className="grid grid-cols-2 gap-4 sm:gap-6 max-w-xl mx-auto">
-        {navCards.map((card) => (
-          <a
-            key={card.title}
-            href={card.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${card.color} aspect-square flex items-center justify-center border-4 border-foreground rounded-2xl neo-brutal-shadow hover-elevate active-elevate-2 cursor-pointer`}
-            data-testid={`card-${card.title.toLowerCase()}`}
-          >
-            <span className="text-xl sm:text-2xl font-bold font-fredoka text-white text-center px-2">
-              {card.title}
-            </span>
-          </a>
-        ))}
+      <div className="grid grid-cols-2 gap-6 sm:gap-8 max-w-2xl mx-auto">
+        {navCards.map((card) => {
+          const IconComponent = card.icon;
+          return (
+            <a
+              key={card.title}
+              href={card.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${card.color} aspect-square flex flex-col items-center justify-center gap-3 border-[5px] border-black rounded-2xl neo-brutal-shadow cursor-pointer p-4`}
+              data-testid={`card-${card.title.toLowerCase()}`}
+            >
+              <IconComponent className="w-12 h-12 sm:w-16 sm:h-16 text-black" strokeWidth={2.5} />
+              <span className="text-lg sm:text-xl font-bold font-fredoka text-black text-center uppercase tracking-[1px]">
+                {card.title}
+              </span>
+            </a>
+          );
+        })}
       </div>
     </section>
   );
@@ -207,7 +221,7 @@ function NavigationHub() {
 function SocialDock() {
   return (
     <section className="py-12" data-testid="social-dock-section">
-      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center">
+      <h2 className="text-3xl sm:text-4xl font-bold font-fredoka mb-8 text-center uppercase tracking-[2px]">
         Connect With Us
       </h2>
       
@@ -218,7 +232,7 @@ function SocialDock() {
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-white border-4 border-foreground rounded-full neo-brutal-shadow hover-elevate active-elevate-2 cursor-pointer text-foreground"
+            className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-white border-[5px] border-black rounded-full neo-brutal-shadow cursor-pointer text-black"
             aria-label={link.label}
             data-testid={`social-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
           >
@@ -288,7 +302,7 @@ export default function Home() {
             className="w-48 sm:w-64 mx-auto mb-4"
             data-testid="main-logo"
           />
-          <p className="text-xl sm:text-2xl font-bold font-fredoka text-muted-foreground" data-testid="text-tagline">
+          <p className="text-xl sm:text-2xl font-bold font-fredoka text-muted-foreground uppercase tracking-[2px]" data-testid="text-tagline">
             1,555 Unique Characters Running Wild
           </p>
         </header>
