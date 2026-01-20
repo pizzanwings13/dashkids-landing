@@ -316,12 +316,20 @@ export default function Home() {
   }, [audioStarted]);
 
   return (
-    <div className="min-h-screen bg-background dot-grid-bg overflow-x-hidden">
+    <div className="min-h-screen living-gradient-bg overflow-x-hidden">
+      {/* Animated gradient blobs */}
+      <div className="gradient-blob blob-pink" aria-hidden="true" />
+      <div className="gradient-blob blob-blue" aria-hidden="true" />
+      <div className="gradient-blob blob-purple" aria-hidden="true" />
+      
+      {/* Film grain overlay */}
+      <div className="grain-overlay" aria-hidden="true" />
+      
       <audio ref={audioRef} src="/song.mp3" loop preload="auto" />
       
       {!hasEntered && <LoadingPortal onEnter={handleEnter} />}
       
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-4 content-layer">
         <header className="pt-8 pb-4 text-center" data-testid="header-section">
           <img
             src={logoPath}
@@ -339,9 +347,11 @@ export default function Home() {
         <SocialDock />
       </div>
 
-      <CharacterRunner />
+      <div className="content-layer">
+        <CharacterRunner />
+      </div>
 
-      <footer className="py-6 text-center text-sm text-muted-foreground" data-testid="footer">
+      <footer className="py-6 text-center text-sm text-muted-foreground content-layer" data-testid="footer">
         © 2025 DashKids. All rights reserved.
       </footer>
     </div>

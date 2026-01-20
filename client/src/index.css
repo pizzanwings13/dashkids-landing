@@ -183,9 +183,112 @@
   }
 }
 
-.dot-grid-bg {
-  background-image: radial-gradient(circle, hsl(var(--foreground) / 0.15) 1px, transparent 1px);
-  background-size: 20px 20px;
+/* Living Gradient Background */
+.living-gradient-bg {
+  background-color: #0d0d0d;
+  position: relative;
+  overflow: hidden;
+}
+
+.living-gradient-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #0d0d0d;
+}
+
+/* Animated glow blobs */
+.gradient-blob {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(150px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.blob-pink {
+  background: #FF69B4;
+  top: -150px;
+  left: -150px;
+  animation: float-pink 15s ease-in-out infinite;
+}
+
+.blob-blue {
+  background: #00BFFF;
+  bottom: -150px;
+  right: -150px;
+  animation: float-blue 15s ease-in-out infinite;
+}
+
+.blob-purple {
+  background: #9B30FF;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: float-purple 15s ease-in-out infinite;
+}
+
+@keyframes float-pink {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(50px, 30px) scale(1.1);
+  }
+  50% {
+    transform: translate(20px, 60px) scale(0.95);
+  }
+  75% {
+    transform: translate(-30px, 40px) scale(1.05);
+  }
+}
+
+@keyframes float-blue {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(-40px, -20px) scale(1.05);
+  }
+  50% {
+    transform: translate(-60px, -50px) scale(1.15);
+  }
+  75% {
+    transform: translate(-20px, -30px) scale(0.9);
+  }
+}
+
+@keyframes float-purple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  33% {
+    transform: translate(-45%, -55%) scale(1.1);
+  }
+  66% {
+    transform: translate(-55%, -45%) scale(0.9);
+  }
+}
+
+/* Film grain overlay */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Content layer above background effects */
+.content-layer {
+  position: relative;
+  z-index: 10;
 }
 
 .portal-bg {
