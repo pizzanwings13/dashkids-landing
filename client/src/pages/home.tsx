@@ -13,25 +13,21 @@ const navCards = [
     title: "MARKETPLACE",
     href: "https://dashkidsmp.xyz",
     color: "bg-[hsl(140,70%,45%)]",
-    hoverColor: "hover:bg-[hsl(140,70%,50%)]",
   },
   {
     title: "GAMES",
     href: "https://tokenrush.live",
     color: "bg-[hsl(200,90%,50%)]",
-    hoverColor: "hover:bg-[hsl(200,90%,55%)]",
   },
   {
     title: "STAKING",
     href: "https://dashkids.vercel.app/",
     color: "bg-[hsl(330,85%,55%)]",
-    hoverColor: "hover:bg-[hsl(330,85%,60%)]",
   },
   {
     title: "PLAYGROUND",
     href: "https://playground.w3lp.io/collection/dashkids",
     color: "bg-[hsl(30,95%,55%)]",
-    hoverColor: "hover:bg-[hsl(30,95%,60%)]",
   },
 ];
 
@@ -112,7 +108,7 @@ function LoadingPortal({ onEnter }: { onEnter: () => void }) {
       />
       <button
         onClick={handleEnter}
-        className="px-12 py-5 text-2xl sm:text-3xl font-bold font-fredoka bg-[hsl(140,70%,45%)] text-white border-4 border-foreground rounded-2xl neo-brutal-shadow animate-bounce-slow neo-brutal-shadow-hover cursor-pointer"
+        className="px-12 py-5 text-2xl sm:text-3xl font-bold font-fredoka bg-[hsl(140,70%,45%)] text-white border-4 border-foreground rounded-2xl neo-brutal-shadow animate-bounce-slow hover-elevate active-elevate-2 cursor-pointer"
         data-testid="button-enter"
       >
         ENTER
@@ -166,10 +162,10 @@ function StyleSwapper() {
           <button
             key={style}
             onClick={() => handleStyleChange(style)}
-            className={`px-5 py-3 text-base sm:text-lg font-bold font-fredoka border-4 border-foreground rounded-xl transition-all duration-150 cursor-pointer ${
+            className={`px-5 py-3 text-base sm:text-lg font-bold font-fredoka border-4 border-foreground rounded-xl cursor-pointer hover-elevate active-elevate-2 ${
               currentStyle === style
-                ? "bg-foreground text-background translate-x-[2px] translate-y-[2px] shadow-[4px_4px_0_hsl(var(--foreground))]"
-                : "bg-card text-foreground shadow-[6px_6px_0_hsl(var(--foreground))] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_hsl(var(--foreground))]"
+                ? "bg-foreground text-background neo-brutal-shadow"
+                : "bg-card text-foreground neo-brutal-shadow"
             }`}
             data-testid={`button-style-${style.toLowerCase()}`}
           >
@@ -195,7 +191,7 @@ function NavigationHub() {
             href={card.href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`${card.color} ${card.hoverColor} aspect-square flex items-center justify-center border-4 border-foreground rounded-2xl neo-brutal-shadow neo-brutal-shadow-hover cursor-pointer`}
+            className={`${card.color} aspect-square flex items-center justify-center border-4 border-foreground rounded-2xl neo-brutal-shadow hover-elevate active-elevate-2 cursor-pointer`}
             data-testid={`card-${card.title.toLowerCase()}`}
           >
             <span className="text-xl sm:text-2xl font-bold font-fredoka text-white text-center px-2">
@@ -222,7 +218,7 @@ function SocialDock() {
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-white border-4 border-foreground rounded-full neo-brutal-shadow neo-brutal-shadow-hover cursor-pointer text-foreground"
+            className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-white border-4 border-foreground rounded-full neo-brutal-shadow hover-elevate active-elevate-2 cursor-pointer text-foreground"
             aria-label={link.label}
             data-testid={`social-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
           >
@@ -292,7 +288,7 @@ export default function Home() {
             className="w-48 sm:w-64 mx-auto mb-4"
             data-testid="main-logo"
           />
-          <p className="text-xl sm:text-2xl font-bold font-fredoka text-muted-foreground">
+          <p className="text-xl sm:text-2xl font-bold font-fredoka text-muted-foreground" data-testid="text-tagline">
             1,555 Unique Characters Running Wild
           </p>
         </header>
