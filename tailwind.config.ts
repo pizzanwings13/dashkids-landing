@@ -88,6 +88,7 @@ export default {
         mono: ["var(--font-mono)"],
         bangers: ["Bangers", "cursive"],
         nunito: ["Nunito", "sans-serif"],
+        fredoka: ["Fredoka", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
@@ -102,6 +103,23 @@ export default {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(200vw)" },
         },
+        bounce: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
+        squish: {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(0.85, 1.1)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "slide-up": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-100%)" },
+        },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -113,6 +131,10 @@ export default {
         "dash-5": "dash 2.5s infinite 0.9s",
         "dash-6": "dash 2.5s infinite 1.4s",
         "dash-7": "dash 2.5s infinite 0.2s",
+        "bounce-slow": "bounce 1s ease-in-out infinite",
+        "squish": "squish 0.3s ease-in-out",
+        "slide-up": "slide-up 0.8s ease-in-out forwards",
+        "marquee": "marquee 20s linear infinite",
       },
     },
   },
