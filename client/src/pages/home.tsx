@@ -159,7 +159,7 @@ function StyleSwapper() {
         Choose Your Style
       </h2>
       
-      <div className="w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] border-[5px] border-black rounded-2xl overflow-hidden neo-brutal-shadow bg-card mb-8">
+      <div className="w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] border-[5px] border-black rounded-2xl overflow-hidden neo-brutal-shadow bg-card mb-8" data-testid="style-swapper-container">
         <img
           ref={imageRef}
           src={styleImages[currentStyle]}
