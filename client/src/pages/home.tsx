@@ -316,7 +316,7 @@ export default function Home() {
   }, [audioStarted]);
 
   return (
-    <div className="min-h-screen living-gradient-bg overflow-x-hidden">
+    <div className="min-h-screen living-gradient-bg">
       {/* Animated gradient blobs */}
       <div className="gradient-blob blob-pink" aria-hidden="true" />
       <div className="gradient-blob blob-blue" aria-hidden="true" />

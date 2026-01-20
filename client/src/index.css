@@ -206,7 +206,7 @@
   height: 300px;
   border-radius: 50%;
   filter: blur(80px);
-  opacity: 0.15;
+  opacity: 0.25;
   pointer-events: none;
   z-index: 1;
 }
@@ -215,27 +215,28 @@
   .gradient-blob {
     width: 600px;
     height: 600px;
-    filter: blur(150px);
+    filter: blur(120px);
+    opacity: 0.2;
   }
 }
 
 .blob-pink {
   background: #FF69B4;
-  top: -150px;
-  left: -150px;
+  top: -100px;
+  left: -100px;
   animation: float-pink 15s ease-in-out infinite;
 }
 
 .blob-blue {
   background: #00BFFF;
-  bottom: -150px;
-  right: -150px;
+  bottom: -100px;
+  right: -100px;
   animation: float-blue 15s ease-in-out infinite;
 }
 
 .blob-purple {
   background: #9B30FF;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   animation: float-purple 15s ease-in-out infinite;
