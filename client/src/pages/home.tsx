@@ -1,12 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Rocket, Gamepad2, Trophy, Puzzle } from "lucide-react";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
+import dashingImg from "@assets/184_1768929510302.png";
+import chillinImg from "@assets/184_(1)_1768929539935.png";
+import portraitImg from "@assets/184_(2)_1768929554699.png";
+import animatedGif from "@assets/184_1768929567793.gif";
 
 const styleImages = {
-  DASHING: "https://dpw988cyzvmfj.cloudfront.net/images/682de984e849486088a93ea5/1140.png",
-  CHILLIN: "https://dpw988cyzvmfj.cloudfront.net/images/682de984e849486088a93ea5/Chilling/1140.png",
-  PORTRAIT: "https://dpw988cyzvmfj.cloudfront.net/images/682de984e849486088a93ea5/Portrait/1140.png",
-  ANIMATED: "https://dpw988cyzvmfj.cloudfront.net/images/682de984e849486088a93ea5/Animated/1140.gif",
+  DASHING: dashingImg,
+  CHILLIN: chillinImg,
+  PORTRAIT: portraitImg,
+  ANIMATED: animatedGif,
 };
 
 const navCards = [
