@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { ArrowLeft, Download, Upload, RotateCcw, Zap, Wallet, ShieldAlert, Loader2, LogOut } from "lucide-react";
+import { ArrowLeft, Download, RotateCcw, Zap, Wallet, ShieldAlert, Loader2, LogOut } from "lucide-react";
 import { Link } from "wouter";
 import { ethers } from "ethers";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
@@ -13,6 +13,8 @@ const APECHAIN_RPC = "https://apechain.calderachain.xyz/http";
 
 const ERC721_ABI = ["function balanceOf(address owner) view returns (uint256)"];
 
+const ALCHEMY_BASE = "https://apechain-mainnet.g.alchemy.com/nft/v3";
+
 const STATUS_MESSAGES = [
   "SCANNING PIXELS...",
   "CRUNCHING COLORS...",
@@ -21,6 +23,12 @@ const STATUS_MESSAGES = [
   "ALMOST THERE...",
   "FINALIZING...",
 ];
+
+interface DashKidNft {
+  tokenId: string;
+  name: string;
+  imageUrl: string;
+}
 
 function pixelateTo(
   sourceCanvas: HTMLCanvasElement,
@@ -49,10 +57,76 @@ function pixelateTo(
   ctx.drawImage(tempCanvas, 0, 0, gridSize, gridSize, 0, 0, w, h);
 }
 
-type WalletState = "disconnected" | "connecting" | "switching" | "checking" | "verified" | "no_nft" | "error";
+function normalizeTokenId(raw: string): string {
+  if (raw.startsWith("0x")) {
+    try {
+      return BigInt(raw).toString(10);
+    } catch {
+      return raw;
+    }
+  }
+  return raw;
+}
+
+function resolveIpfs(url: string): string {
+  if (url.startsWith("ipfs://")) {
+    return url.replace("ipfs://", "https://ipfs.io/ipfs/");
+  }
+  return url;
+}
+
+async function fetchDashKids(ownerAddress: string): Promise<DashKidNft[]> {
+  const apiKey = import.meta.env.VITE_ALCHEMY_API_KEY;
+  if (!apiKey) {
+    throw new Error("Alchemy API key not configured");
+  }
+
+  const url = `${ALCHEMY_BASE}/${apiKey}/getNFTsForOwner?owner=${ownerAddress}&contractAddresses[]=${DASHKIDS_CONTRACT}&withMetadata=true&pageSize=100`;
+
+  const response = await fetch(url, {
+    headers: { accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch NFTs");
+  }
+
+  const data = await response.json();
+
+  const nfts: DashKidNft[] = (data.ownedNfts || [])
+    .map((nft: any) => {
+      const rawId = nft.tokenId || nft.id?.tokenId || "0";
+      const tokenId = normalizeTokenId(rawId);
+      const name = nft.name || nft.title || `DashKid #${tokenId}`;
+      let imageUrl = "";
+
+      if (nft.image?.cachedUrl) {
+        imageUrl = nft.image.cachedUrl;
+      } else if (nft.image?.originalUrl) {
+        imageUrl = nft.image.originalUrl;
+      } else if (nft.image?.pngUrl) {
+        imageUrl = nft.image.pngUrl;
+      } else if (nft.media?.[0]?.gateway) {
+        imageUrl = nft.media[0].gateway;
+      } else if (nft.media?.[0]?.raw) {
+        imageUrl = nft.media[0].raw;
+      } else if (nft.raw?.metadata?.image) {
+        imageUrl = nft.raw.metadata.image;
+      }
+
+      imageUrl = resolveIpfs(imageUrl);
+
+      return { tokenId, name, imageUrl };
+    })
+    .sort((a: DashKidNft, b: DashKidNft) => Number(a.tokenId) - Number(b.tokenId));
+
+  return nfts;
+}
+
+type WalletState = "disconnected" | "connecting" | "switching" | "checking" | "loading_nfts" | "verified" | "no_nft" | "error";
 
 export default function PixelArtPage() {
-  const [originalImage, setOriginalImage] = useState<string | null>(null);
+  const [selectedNft, setSelectedNft] = useState<DashKidNft | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasResult, setHasResult] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -62,9 +136,9 @@ export default function PixelArtPage() {
   const [walletState, setWalletState] = useState<WalletState>("disconnected");
   const [walletAddress, setWalletAddress] = useState("");
   const [nftCount, setNftCount] = useState(0);
+  const [dashKids, setDashKids] = useState<DashKidNft[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const sourceCanvasRef = useRef<HTMLCanvasElement>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement>(null);
   const animFrameRef = useRef<number>(0);
@@ -75,8 +149,9 @@ export default function PixelArtPage() {
         setWalletState("disconnected");
         setWalletAddress("");
         setNftCount(0);
+        setDashKids([]);
       } else {
-        checkNftBalance(accounts[0]);
+        checkAndLoadNfts(accounts[0]);
       }
     };
 
@@ -129,7 +204,7 @@ export default function PixelArtPage() {
     }
   };
 
-  const checkNftBalance = async (address: string) => {
+  const checkAndLoadNfts = async (address: string) => {
     setWalletState("checking");
     setWalletAddress(address);
     try {
@@ -138,11 +213,17 @@ export default function PixelArtPage() {
       const balance: bigint = await contract.balanceOf(address);
       const count = Number(balance);
       setNftCount(count);
-      if (count > 0) {
-        setWalletState("verified");
-      } else {
+
+      if (count === 0) {
         setWalletState("no_nft");
+        return;
       }
+
+      setWalletState("loading_nfts");
+
+      const nfts = await fetchDashKids(address);
+      setDashKids(nfts);
+      setWalletState("verified");
     } catch (err: any) {
       setWalletState("error");
       setErrorMsg("Could not verify NFT ownership. Please try again.");
@@ -181,7 +262,7 @@ export default function PixelArtPage() {
         }
       }
 
-      await checkNftBalance(accounts[0]);
+      await checkAndLoadNfts(accounts[0]);
     } catch (err: any) {
       if (err.code === 4001) {
         setWalletState("disconnected");
@@ -196,7 +277,8 @@ export default function PixelArtPage() {
     setWalletState("disconnected");
     setWalletAddress("");
     setNftCount(0);
-    setOriginalImage(null);
+    setDashKids([]);
+    setSelectedNft(null);
     setHasResult(false);
     setIsProcessing(false);
   };
@@ -245,15 +327,34 @@ export default function PixelArtPage() {
     []
   );
 
-  const processImage = useCallback(
-    (imgSrc: string) => {
+  const [imageError, setImageError] = useState(false);
+
+  const processNft = useCallback(
+    (nft: DashKidNft) => {
+      if (!nft.imageUrl) {
+        return;
+      }
+
       if (animFrameRef.current) {
         clearTimeout(animFrameRef.current);
       }
 
+      setSelectedNft(nft);
+      setImageError(false);
+
+      let timedOut = false;
+      const timeoutId = window.setTimeout(() => {
+        timedOut = true;
+        setIsProcessing(false);
+        setImageError(true);
+      }, 15000);
+
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
+        clearTimeout(timeoutId);
+        if (timedOut) return;
+
         const sourceCanvas = sourceCanvasRef.current;
         const outputCanvas = outputCanvasRef.current;
         if (!sourceCanvas || !outputCanvas) return;
@@ -268,56 +369,33 @@ export default function PixelArtPage() {
         animatePixelation(sourceCanvas, outputCanvas);
       };
       img.onerror = () => {
+        clearTimeout(timeoutId);
         setIsProcessing(false);
+        setImageError(true);
       };
-      img.src = imgSrc;
+
+      img.src = nft.imageUrl;
     },
     [animatePixelation]
   );
 
-  useEffect(() => {
-    if (originalImage) {
-      processImage(originalImage);
-    }
-    return () => {
-      if (animFrameRef.current) clearTimeout(animFrameRef.current);
-    };
-  }, [originalImage, processImage]);
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result as string;
-      setOriginalImage(result);
-      setHasResult(false);
-    };
-    reader.readAsDataURL(file);
-  };
-
   const handleDownload = () => {
     const canvas = outputCanvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !selectedNft) return;
 
     const link = document.createElement("a");
-    link.download = "dashkids-pixel-art.png";
+    link.download = `dashkid-${selectedNft.tokenId}-pixel.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
 
-  const handleReset = () => {
+  const handleBack = () => {
     if (animFrameRef.current) clearTimeout(animFrameRef.current);
-    setOriginalImage(null);
+    setSelectedNft(null);
     setHasResult(false);
     setIsProcessing(false);
     setProgress(0);
     setStatusMsg("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   };
 
   const isGated = walletState !== "verified";
@@ -330,7 +408,7 @@ export default function PixelArtPage() {
       <div className="grain-overlay" aria-hidden="true" />
 
       <div className="max-w-4xl mx-auto px-4 content-layer">
-        <header className="pt-6 sm:pt-8 pb-4 flex items-center justify-between" data-testid="pixel-header">
+        <header className="pt-6 sm:pt-8 pb-4 flex items-center justify-between gap-2" data-testid="pixel-header">
           <Link href="/">
             <button
               className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-lg font-bold font-fredoka bg-[#FF69B4] text-black border-[3px] sm:border-[4px] border-black rounded-full neo-brutal-shadow uppercase tracking-[1px] cursor-pointer"
@@ -344,10 +422,10 @@ export default function PixelArtPage() {
           {walletState === "verified" && (
             <button
               onClick={disconnectWallet}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-bold font-fredoka bg-[#1a1a2e] text-[#32CD32] border-[3px] border-[#32CD32] rounded-full uppercase tracking-[1px] cursor-pointer"
+              className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold font-fredoka bg-[#1a1a2e] text-[#32CD32] border-[3px] border-[#32CD32] rounded-full uppercase tracking-[1px] cursor-pointer"
               data-testid="button-disconnect-wallet"
             >
-              <Wallet className="w-4 h-4" />
+              <Wallet className="w-3 h-3 sm:w-4 sm:h-4" />
               {shortenAddress(walletAddress)}
               <LogOut className="w-3 h-3" />
             </button>
@@ -356,7 +434,7 @@ export default function PixelArtPage() {
           <img
             src={logoPath}
             alt="DashKids Logo"
-            className="w-24 sm:w-40"
+            className="w-20 sm:w-40"
             data-testid="pixel-logo"
           />
         </header>
@@ -382,7 +460,7 @@ export default function PixelArtPage() {
               </h2>
 
               <p className="text-sm sm:text-base font-fredoka text-gray-400 text-center leading-relaxed uppercase tracking-[1px]">
-                Connect your wallet and verify you own a DashKids NFT to unlock this feature
+                Connect your wallet to load your DashKids and turn them into pixel art
               </p>
 
               {walletState === "disconnected" && (
@@ -396,13 +474,14 @@ export default function PixelArtPage() {
                 </button>
               )}
 
-              {(walletState === "connecting" || walletState === "switching" || walletState === "checking") && (
+              {(walletState === "connecting" || walletState === "switching" || walletState === "checking" || walletState === "loading_nfts") && (
                 <div className="flex flex-col items-center gap-3 mt-2" data-testid="wallet-loading">
                   <Loader2 className="w-8 h-8 text-[#00BFFF] animate-spin" />
                   <span className="text-sm sm:text-base font-bold font-fredoka text-[#00BFFF] uppercase tracking-[2px] animate-pulse">
                     {walletState === "connecting" && "CONNECTING..."}
                     {walletState === "switching" && "SWITCHING TO APECHAIN..."}
                     {walletState === "checking" && "VERIFYING NFT..."}
+                    {walletState === "loading_nfts" && "LOADING YOUR DASHKIDS..."}
                   </span>
                 </div>
               )}
@@ -417,7 +496,7 @@ export default function PixelArtPage() {
                   <p className="text-xs sm:text-sm font-fredoka text-gray-500 text-center uppercase tracking-[1px]">
                     Wallet: {shortenAddress(walletAddress)}
                   </p>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 flex-wrap justify-center">
                     <a
                       href="https://magiceden.us/collections/apechain/0x7256de5b154e4242c989fa089c66f153f758335c"
                       target="_blank"
@@ -456,129 +535,156 @@ export default function PixelArtPage() {
               )}
             </div>
           </div>
-        ) : (
-          <>
-            {!originalImage ? (
-              <div className="flex flex-col items-center py-8 sm:py-12">
-                <div className="mb-6 px-5 py-2 bg-[#32CD32]/20 border-[3px] border-[#32CD32] rounded-full" data-testid="verified-badge">
-                  <span className="text-sm sm:text-base font-bold font-fredoka text-[#32CD32] uppercase tracking-[2px]">
-                    {nftCount} DashKid{nftCount !== 1 ? "s" : ""} Verified
-                  </span>
-                </div>
-                <label
-                  htmlFor="dashkid-upload"
-                  className="w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] border-[4px] sm:border-[5px] border-dashed border-gray-500 rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer group"
-                  data-testid="upload-dropzone"
+        ) : !selectedNft ? (
+          <div className="flex flex-col items-center pb-12">
+            <div className="mb-6 px-5 py-2 bg-[#32CD32]/20 border-[3px] border-[#32CD32] rounded-full" data-testid="verified-badge">
+              <span className="text-sm sm:text-base font-bold font-fredoka text-[#32CD32] uppercase tracking-[2px]">
+                {nftCount} DashKid{nftCount !== 1 ? "s" : ""} Found
+              </span>
+            </div>
+
+            <p className="text-sm sm:text-base font-fredoka text-gray-400 uppercase tracking-[1px] mb-6 text-center">
+              Select a DashKid to pixelate
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 w-full max-w-[600px]" data-testid="nft-gallery">
+              {dashKids.map((nft) => (
+                <button
+                  key={nft.tokenId}
+                  onClick={() => processNft(nft)}
+                  disabled={!nft.imageUrl}
+                  className={`group flex flex-col items-center gap-2 ${nft.imageUrl ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+                  data-testid={`nft-card-${nft.tokenId}`}
                 >
-                  <Upload className="w-12 h-12 sm:w-16 sm:h-16 text-gray-500 group-hover:text-[#32CD32]" strokeWidth={2.5} />
-                  <span className="text-lg sm:text-2xl font-bold font-fredoka text-gray-500 group-hover:text-[#32CD32] uppercase tracking-[1px] text-center px-4">
-                    Upload Your DashKid
-                  </span>
-                  <span className="text-sm sm:text-base font-fredoka text-gray-600 uppercase tracking-[1px]">
-                    Tap to choose image
-                  </span>
-                </label>
-                <input
-                  ref={fileInputRef}
-                  id="dashkid-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  data-testid="input-file-upload"
-                />
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-6 sm:gap-8 pb-12">
-                <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 w-full justify-center">
-                  <div className="flex flex-col items-center gap-2">
-                    <span className="text-sm sm:text-base font-bold font-fredoka text-gray-400 uppercase tracking-[1px]">
-                      Original
-                    </span>
-                    <div className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black" data-testid="original-preview">
+                  <div className="w-full aspect-square border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black group-hover:translate-x-[4px] group-hover:translate-y-[4px] group-hover:shadow-none transition-all duration-150">
+                    {nft.imageUrl ? (
                       <img
-                        src={originalImage}
-                        alt="Original DashKid"
-                        className="w-full h-full object-contain"
+                        src={nft.imageUrl}
+                        alt={nft.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
                       />
-                    </div>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-600 font-fredoka text-sm uppercase">
+                        No Image
+                      </div>
+                    )}
                   </div>
+                  <span className="text-xs sm:text-sm font-bold font-fredoka text-gray-300 uppercase tracking-[1px] group-hover:text-[#32CD32] transition-colors">
+                    {nft.name}
+                  </span>
+                </button>
+              ))}
+            </div>
 
-                  <div className="flex flex-col items-center gap-2">
-                    <span className="text-sm sm:text-base font-bold font-fredoka text-[#32CD32] uppercase tracking-[1px] flex items-center gap-2">
-                      {isProcessing && <Zap className="w-4 h-4 animate-spin" />}
-                      32x32 Pixel Art
-                      {isProcessing && <Zap className="w-4 h-4 animate-spin" />}
-                    </span>
-                    <div
-                      className={`w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black relative ${
-                        glitchFlash ? "pixel-complete-flash" : ""
-                      }`}
-                      data-testid="pixel-preview"
-                    >
-                      <canvas
-                        ref={outputCanvasRef}
-                        className="w-full h-full object-contain"
-                        style={{ imageRendering: "pixelated" }}
-                        data-testid="pixel-canvas"
-                      />
-                    </div>
-                  </div>
+            {dashKids.length === 0 && nftCount > 0 && (
+              <div className="flex flex-col items-center gap-3 mt-8">
+                <Loader2 className="w-8 h-8 text-[#00BFFF] animate-spin" />
+                <span className="text-sm font-bold font-fredoka text-[#00BFFF] uppercase tracking-[2px]">
+                  Loading images...
+                </span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-6 sm:gap-8 pb-12">
+            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 w-full justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-sm sm:text-base font-bold font-fredoka text-gray-400 uppercase tracking-[1px]">
+                  {selectedNft.name}
+                </span>
+                <div className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black" data-testid="original-preview">
+                  <img
+                    src={selectedNft.imageUrl}
+                    alt={selectedNft.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
+              </div>
 
-                <canvas ref={sourceCanvasRef} className="hidden" />
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-sm sm:text-base font-bold font-fredoka text-[#32CD32] uppercase tracking-[1px] flex items-center gap-2">
+                  {isProcessing && <Zap className="w-4 h-4 animate-spin" />}
+                  32x32 Pixel Art
+                  {isProcessing && <Zap className="w-4 h-4 animate-spin" />}
+                </span>
+                <div
+                  className={`w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black relative ${
+                    glitchFlash ? "pixel-complete-flash" : ""
+                  }`}
+                  data-testid="pixel-preview"
+                >
+                  <canvas
+                    ref={outputCanvasRef}
+                    className="w-full h-full object-contain"
+                    style={{ imageRendering: "pixelated" }}
+                    data-testid="pixel-canvas"
+                  />
+                </div>
+              </div>
+            </div>
 
-                {isProcessing && (
-                  <div className="w-[280px] sm:w-[400px] flex flex-col items-center gap-2" data-testid="progress-container">
-                    <div className="w-full h-5 sm:h-6 border-[3px] border-black rounded-full overflow-hidden bg-black/50">
-                      <div
-                        className="h-full rounded-full transition-all duration-100 ease-out"
-                        style={{
-                          width: `${progress}%`,
-                          background: "linear-gradient(90deg, #32CD32, #00BFFF, #FF69B4, #FF8C00)",
-                          backgroundSize: "200% 100%",
-                          animation: "shimmer-bar 1s linear infinite",
-                        }}
-                        data-testid="progress-bar"
-                      />
-                    </div>
-                    <span className="text-sm sm:text-base font-bold font-fredoka text-[#00BFFF] uppercase tracking-[2px] animate-pulse" data-testid="text-status">
-                      {statusMsg}
-                    </span>
-                  </div>
-                )}
+            <canvas ref={sourceCanvasRef} className="hidden" />
 
-                {hasResult && (
-                  <div className="flex items-center gap-2 animate-bounce-in" data-testid="complete-badge">
-                    <span className="text-lg sm:text-xl font-bold font-fredoka text-[#32CD32] uppercase tracking-[2px]">
-                      COMPLETE
-                    </span>
-                  </div>
-                )}
+            {isProcessing && (
+              <div className="w-[280px] sm:w-[400px] flex flex-col items-center gap-2" data-testid="progress-container">
+                <div className="w-full h-5 sm:h-6 border-[3px] border-black rounded-full overflow-hidden bg-black/50">
+                  <div
+                    className="h-full rounded-full transition-all duration-100 ease-out"
+                    style={{
+                      width: `${progress}%`,
+                      background: "linear-gradient(90deg, #32CD32, #00BFFF, #FF69B4, #FF8C00)",
+                      backgroundSize: "200% 100%",
+                      animation: "shimmer-bar 1s linear infinite",
+                    }}
+                    data-testid="progress-bar"
+                  />
+                </div>
+                <span className="text-sm sm:text-base font-bold font-fredoka text-[#00BFFF] uppercase tracking-[2px] animate-pulse" data-testid="text-status">
+                  {statusMsg}
+                </span>
+              </div>
+            )}
 
-                <div className="flex gap-3 sm:gap-4">
-                  {hasResult && (
-                    <button
-                      onClick={handleDownload}
-                      className="flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-xl font-bold font-fredoka bg-[#32CD32] text-black border-[3px] sm:border-[5px] border-black rounded-full neo-brutal-shadow cursor-pointer uppercase tracking-[1px]"
-                      data-testid="button-download"
-                    >
-                      <Download className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
-                      SAVE
-                    </button>
-                  )}
-                  <button
-                    onClick={handleReset}
-                    className="flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-xl font-bold font-fredoka bg-[#FF8C00] text-black border-[3px] sm:border-[5px] border-black rounded-full neo-brutal-shadow cursor-pointer uppercase tracking-[1px]"
-                    data-testid="button-reset"
-                  >
-                    <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
-                    NEW
-                  </button>
+            {imageError && (
+              <div className="flex flex-col items-center gap-3" data-testid="image-error">
+                <div className="px-5 py-3 bg-red-500/20 border-[3px] border-red-500 rounded-xl">
+                  <span className="text-sm sm:text-base font-bold font-fredoka text-red-400 uppercase tracking-[1px]">
+                    Failed to load image
+                  </span>
                 </div>
               </div>
             )}
-          </>
+
+            {hasResult && (
+              <div className="flex items-center gap-2 animate-bounce-in" data-testid="complete-badge">
+                <span className="text-lg sm:text-xl font-bold font-fredoka text-[#32CD32] uppercase tracking-[2px]">
+                  COMPLETE
+                </span>
+              </div>
+            )}
+
+            <div className="flex gap-3 sm:gap-4 flex-wrap justify-center">
+              {hasResult && (
+                <button
+                  onClick={handleDownload}
+                  className="flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-xl font-bold font-fredoka bg-[#32CD32] text-black border-[3px] sm:border-[5px] border-black rounded-full neo-brutal-shadow cursor-pointer uppercase tracking-[1px]"
+                  data-testid="button-download"
+                >
+                  <Download className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
+                  SAVE
+                </button>
+              )}
+              <button
+                onClick={handleBack}
+                className="flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-xl font-bold font-fredoka bg-[#FF8C00] text-black border-[3px] sm:border-[5px] border-black rounded-full neo-brutal-shadow cursor-pointer uppercase tracking-[1px]"
+                data-testid="button-back-gallery"
+              >
+                <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
+                PICK ANOTHER
+              </button>
+            </div>
+          </div>
         )}
       </div>
 
