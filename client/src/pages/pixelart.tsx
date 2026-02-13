@@ -9,7 +9,15 @@ const TARGET_SIZE = 32;
 const DASHKIDS_CONTRACT = "0x7256de5b154e4242c989fa089c66f153f758335c";
 const APECHAIN_ID = 33139;
 const APECHAIN_HEX = "0x8173";
-const APECHAIN_RPC = "https://apechain.calderachain.xyz/http";
+const APECHAIN_PUBLIC_RPC = "https://apechain.calderachain.xyz/http";
+
+function getApeChainRpc(): string {
+  const apiKey = import.meta.env.VITE_ALCHEMY_API_KEY;
+  if (apiKey) {
+    return `https://apechain-mainnet.g.alchemy.com/v2/${apiKey}`;
+  }
+  return APECHAIN_PUBLIC_RPC;
+}
 
 const ERC721_ABI = ["function balanceOf(address owner) view returns (uint256)"];
 
@@ -190,7 +198,7 @@ export default function PixelArtPage() {
                 chainId: APECHAIN_HEX,
                 chainName: "ApeChain",
                 nativeCurrency: { name: "ApeCoin", symbol: "APE", decimals: 18 },
-                rpcUrls: [APECHAIN_RPC],
+                rpcUrls: [APECHAIN_PUBLIC_RPC],
                 blockExplorerUrls: ["https://apescan.io"],
               },
             ],
@@ -208,7 +216,7 @@ export default function PixelArtPage() {
     setWalletState("checking");
     setWalletAddress(address);
     try {
-      const provider = new ethers.JsonRpcProvider(APECHAIN_RPC);
+      const provider = new ethers.JsonRpcProvider(getApeChainRpc());
       const contract = new ethers.Contract(DASHKIDS_CONTRACT, ERC721_ABI, provider);
       const balance: bigint = await contract.balanceOf(address);
       const count = Number(balance);
