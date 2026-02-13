@@ -204,12 +204,6 @@ export default function PixelArtPage() {
           >
             Pixel Art Generator
           </h1>
-          <p
-            className="text-base sm:text-xl font-fredoka text-gray-400 uppercase tracking-[1px]"
-            data-testid="text-pixel-subtitle"
-          >
-            Turn your DashKid into 32x32 pixel art
-          </p>
         </div>
 
         {!originalImage ? (
