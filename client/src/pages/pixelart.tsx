@@ -212,22 +212,21 @@ export default function PixelArtPage() {
                   Pixel Art
                 </span>
                 <div
-                  className={`w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black flex items-center justify-center ${
-                    isProcessing ? "animate-pulse" : ""
-                  }`}
+                  className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black relative"
                   data-testid="pixel-preview"
                 >
-                  {isProcessing ? (
-                    <span className="text-lg font-bold font-fredoka text-[#32CD32] uppercase animate-pulse">
-                      Processing...
-                    </span>
-                  ) : (
-                    <canvas
-                      ref={outputCanvasRef}
-                      className="w-full h-full object-contain"
-                      style={{ imageRendering: "pixelated" }}
-                      data-testid="pixel-canvas"
-                    />
+                  <canvas
+                    ref={outputCanvasRef}
+                    className="w-full h-full object-contain"
+                    style={{ imageRendering: "pixelated" }}
+                    data-testid="pixel-canvas"
+                  />
+                  {isProcessing && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+                      <span className="text-lg font-bold font-fredoka text-[#32CD32] uppercase animate-pulse">
+                        Processing...
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>
