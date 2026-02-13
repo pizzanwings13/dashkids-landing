@@ -37,7 +37,7 @@ const navCards = [
     external: true,
   },
   {
-    title: "PLAYGROUND",
+    title: "PIXEL GENERATOR",
     href: "/pixelart",
     color: "bg-[#FF8C00]",
     icon: Puzzle,
