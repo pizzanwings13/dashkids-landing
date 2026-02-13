@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { ArrowLeft, Download, Upload, RotateCcw } from "lucide-react";
+import { ArrowLeft, Download, Upload, RotateCcw, Zap } from "lucide-react";
 import { Link } from "wouter";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
 
@@ -10,7 +10,16 @@ const PIXEL_SIZES = [
   { label: "CHUNKY", value: 24, color: "bg-[#FF8C00]" },
 ];
 
-function pixelateImage(
+const STATUS_MESSAGES = [
+  "SCANNING PIXELS...",
+  "CRUNCHING COLORS...",
+  "BUILDING BLOCKS...",
+  "STACKING CUBES...",
+  "ALMOST THERE...",
+  "FINALIZING...",
+];
+
+function pixelateCanvas(
   sourceCanvas: HTMLCanvasElement,
   outputCanvas: HTMLCanvasElement,
   pixelSize: number
@@ -44,14 +53,64 @@ export default function PixelArtPage() {
   const [pixelSize, setPixelSize] = useState(8);
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasResult, setHasResult] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [statusMsg, setStatusMsg] = useState("");
+  const [glitchFlash, setGlitchFlash] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sourceCanvasRef = useRef<HTMLCanvasElement>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement>(null);
+  const animFrameRef = useRef<number>(0);
+
+  const animatePixelation = useCallback(
+    (sourceCanvas: HTMLCanvasElement, outputCanvas: HTMLCanvasElement, targetSize: number) => {
+      const steps = [128, 96, 64, 48, 32, 24, 16, 12, 8, 6, 4, 2].filter(s => s >= targetSize);
+      if (!steps.includes(targetSize)) steps.push(targetSize);
+
+      let stepIndex = 0;
+      const totalSteps = steps.length;
+
+      setIsProcessing(true);
+      setProgress(0);
+      setHasResult(false);
+
+      const runStep = () => {
+        if (stepIndex >= totalSteps) {
+          setIsProcessing(false);
+          setHasResult(true);
+          setProgress(100);
+          setGlitchFlash(true);
+          setTimeout(() => setGlitchFlash(false), 300);
+          return;
+        }
+
+        const currentPixelSize = steps[stepIndex];
+        pixelateCanvas(sourceCanvas, outputCanvas, currentPixelSize);
+
+        const pct = Math.round(((stepIndex + 1) / totalSteps) * 100);
+        setProgress(pct);
+
+        const msgIndex = Math.min(
+          Math.floor((stepIndex / totalSteps) * STATUS_MESSAGES.length),
+          STATUS_MESSAGES.length - 1
+        );
+        setStatusMsg(STATUS_MESSAGES[msgIndex]);
+
+        stepIndex++;
+        animFrameRef.current = window.setTimeout(runStep, 120);
+      };
+
+      runStep();
+    },
+    []
+  );
 
   const processImage = useCallback(
     (imgSrc: string, size: number) => {
-      setIsProcessing(true);
+      if (animFrameRef.current) {
+        clearTimeout(animFrameRef.current);
+      }
+
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
@@ -74,22 +133,23 @@ export default function PixelArtPage() {
         if (!ctx) return;
         ctx.drawImage(img, 0, 0, w, h);
 
-        pixelateImage(sourceCanvas, outputCanvas, size);
-        setHasResult(true);
-        setIsProcessing(false);
+        animatePixelation(sourceCanvas, outputCanvas, size);
       };
       img.onerror = () => {
         setIsProcessing(false);
       };
       img.src = imgSrc;
     },
-    []
+    [animatePixelation]
   );
 
   useEffect(() => {
     if (originalImage) {
       processImage(originalImage, pixelSize);
     }
+    return () => {
+      if (animFrameRef.current) clearTimeout(animFrameRef.current);
+    };
   }, [pixelSize, originalImage, processImage]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,9 +177,13 @@ export default function PixelArtPage() {
   };
 
   const handleReset = () => {
+    if (animFrameRef.current) clearTimeout(animFrameRef.current);
     setOriginalImage(null);
     setHasResult(false);
+    setIsProcessing(false);
     setPixelSize(8);
+    setProgress(0);
+    setStatusMsg("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -208,11 +272,15 @@ export default function PixelArtPage() {
               </div>
 
               <div className="flex flex-col items-center gap-2">
-                <span className="text-sm sm:text-base font-bold font-fredoka text-[#32CD32] uppercase tracking-[1px]">
+                <span className="text-sm sm:text-base font-bold font-fredoka text-[#32CD32] uppercase tracking-[1px] flex items-center gap-2">
+                  {isProcessing && <Zap className="w-4 h-4 animate-spin" />}
                   Pixel Art
+                  {isProcessing && <Zap className="w-4 h-4 animate-spin" />}
                 </span>
                 <div
-                  className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black relative"
+                  className={`w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] border-[3px] sm:border-[4px] border-black rounded-xl overflow-hidden neo-brutal-shadow bg-black relative ${
+                    glitchFlash ? "pixel-complete-flash" : ""
+                  }`}
                   data-testid="pixel-preview"
                 >
                   <canvas
@@ -221,18 +289,39 @@ export default function PixelArtPage() {
                     style={{ imageRendering: "pixelated" }}
                     data-testid="pixel-canvas"
                   />
-                  {isProcessing && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-                      <span className="text-lg font-bold font-fredoka text-[#32CD32] uppercase animate-pulse">
-                        Processing...
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
 
             <canvas ref={sourceCanvasRef} className="hidden" />
+
+            {isProcessing && (
+              <div className="w-[280px] sm:w-[400px] flex flex-col items-center gap-2" data-testid="progress-container">
+                <div className="w-full h-5 sm:h-6 border-[3px] border-black rounded-full overflow-hidden bg-black/50">
+                  <div
+                    className="h-full rounded-full transition-all duration-100 ease-out"
+                    style={{
+                      width: `${progress}%`,
+                      background: `linear-gradient(90deg, #32CD32, #00BFFF, #FF69B4, #FF8C00)`,
+                      backgroundSize: "200% 100%",
+                      animation: "shimmer-bar 1s linear infinite",
+                    }}
+                    data-testid="progress-bar"
+                  />
+                </div>
+                <span className="text-sm sm:text-base font-bold font-fredoka text-[#00BFFF] uppercase tracking-[2px] animate-pulse" data-testid="text-status">
+                  {statusMsg}
+                </span>
+              </div>
+            )}
+
+            {hasResult && (
+              <div className="flex items-center gap-2 animate-bounce-in" data-testid="complete-badge">
+                <span className="text-lg sm:text-xl font-bold font-fredoka text-[#32CD32] uppercase tracking-[2px]">
+                  COMPLETE
+                </span>
+              </div>
+            )}
 
             <div className="flex flex-col items-center gap-3 sm:gap-4">
               <span className="text-sm sm:text-base font-bold font-fredoka text-gray-400 uppercase tracking-[1px]">
@@ -243,13 +332,14 @@ export default function PixelArtPage() {
                   <button
                     key={size.label}
                     onClick={() => setPixelSize(size.value)}
+                    disabled={isProcessing}
                     className={`px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-lg font-bold font-fredoka border-[3px] sm:border-[4px] border-black rounded-full cursor-pointer uppercase tracking-[1px] text-black ${
                       size.color
                     } ${
                       pixelSize === size.value
                         ? "neo-brutal-shadow"
                         : "opacity-50"
-                    }`}
+                    } ${isProcessing ? "cursor-not-allowed" : ""}`}
                     data-testid={`button-pixel-${size.label.toLowerCase()}`}
                   >
                     {size.label}

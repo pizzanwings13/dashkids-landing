@@ -324,6 +324,50 @@
   animation: flash-white 0.3s ease-out forwards;
 }
 
+@keyframes shimmer-bar {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.pixel-complete-flash {
+  animation: complete-flash 0.3s ease-out;
+}
+
+@keyframes complete-flash {
+  0% {
+    box-shadow: 0 0 0px rgba(50, 205, 50, 0);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(50, 205, 50, 0.8), 0 0 80px rgba(50, 205, 50, 0.4);
+  }
+  100% {
+    box-shadow: 8px 8px 0px 0px #000000;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out;
+}
+
 .neo-brutal-shadow {
   box-shadow: 8px 8px 0px 0px #000000;
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
