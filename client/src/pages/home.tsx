@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
-import { Rocket, Gamepad2, Trophy, Puzzle, Sparkles } from "lucide-react";
+import { Rocket, Gamepad2, Trophy, Puzzle } from "lucide-react";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
 import dashingImg from "@assets/184_1768929510302.png";
 import chillinImg from "@assets/184_(1)_1768929539935.png";
@@ -38,16 +38,9 @@ const navCards = [
   },
   {
     title: "PLAYGROUND",
-    href: "https://playground.w3lp.io/collection/dashkids",
+    href: "/pixelart",
     color: "bg-[#FF8C00]",
     icon: Puzzle,
-    external: true,
-  },
-  {
-    title: "PIXEL ART",
-    href: "/pixelart",
-    color: "bg-[#9B30FF]",
-    icon: Sparkles,
     external: false,
   },
 ];
