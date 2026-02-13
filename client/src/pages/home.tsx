@@ -15,7 +15,7 @@ const styleImages = {
 
 const navCards = [
   {
-    title: "MARKETPLACE",
+    title: "DASHHUB",
     href: "https://dashkidsmp.xyz",
     color: "bg-[#32CD32]",
     icon: Rocket,
