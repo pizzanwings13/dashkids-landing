@@ -3,12 +3,7 @@ import { ArrowLeft, Download, Upload, RotateCcw, Zap } from "lucide-react";
 import { Link } from "wouter";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
 
-const PIXEL_SIZES = [
-  { label: "SMALL", value: 4, color: "bg-[#32CD32]" },
-  { label: "MEDIUM", value: 8, color: "bg-[#00BFFF]" },
-  { label: "LARGE", value: 16, color: "bg-[#FF69B4]" },
-  { label: "CHUNKY", value: 24, color: "bg-[#FF8C00]" },
-];
+const TARGET_SIZE = 32;
 
 const STATUS_MESSAGES = [
   "SCANNING PIXELS...",
@@ -19,10 +14,10 @@ const STATUS_MESSAGES = [
   "FINALIZING...",
 ];
 
-function pixelateCanvas(
+function pixelateTo(
   sourceCanvas: HTMLCanvasElement,
   outputCanvas: HTMLCanvasElement,
-  pixelSize: number
+  gridSize: number
 ) {
   const ctx = outputCanvas.getContext("2d");
   if (!ctx) return;
@@ -36,21 +31,18 @@ function pixelateCanvas(
   const tempCtx = tempCanvas.getContext("2d");
   if (!tempCtx) return;
 
-  const smallW = Math.ceil(w / pixelSize);
-  const smallH = Math.ceil(h / pixelSize);
-  tempCanvas.width = smallW;
-  tempCanvas.height = smallH;
+  tempCanvas.width = gridSize;
+  tempCanvas.height = gridSize;
 
   tempCtx.imageSmoothingEnabled = false;
-  tempCtx.drawImage(sourceCanvas, 0, 0, smallW, smallH);
+  tempCtx.drawImage(sourceCanvas, 0, 0, gridSize, gridSize);
 
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(tempCanvas, 0, 0, smallW, smallH, 0, 0, w, h);
+  ctx.drawImage(tempCanvas, 0, 0, gridSize, gridSize, 0, 0, w, h);
 }
 
 export default function PixelArtPage() {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
-  const [pixelSize, setPixelSize] = useState(8);
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasResult, setHasResult] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -63,9 +55,8 @@ export default function PixelArtPage() {
   const animFrameRef = useRef<number>(0);
 
   const animatePixelation = useCallback(
-    (sourceCanvas: HTMLCanvasElement, outputCanvas: HTMLCanvasElement, targetSize: number) => {
-      const steps = [128, 96, 64, 48, 32, 24, 16, 12, 8, 6, 4, 2].filter(s => s >= targetSize);
-      if (!steps.includes(targetSize)) steps.push(targetSize);
+    (sourceCanvas: HTMLCanvasElement, outputCanvas: HTMLCanvasElement) => {
+      const steps = [4, 6, 8, 10, 12, 16, 20, 24, 28, TARGET_SIZE];
 
       let stepIndex = 0;
       const totalSteps = steps.length;
@@ -84,8 +75,8 @@ export default function PixelArtPage() {
           return;
         }
 
-        const currentPixelSize = steps[stepIndex];
-        pixelateCanvas(sourceCanvas, outputCanvas, currentPixelSize);
+        const currentGrid = steps[stepIndex];
+        pixelateTo(sourceCanvas, outputCanvas, currentGrid);
 
         const pct = Math.round(((stepIndex + 1) / totalSteps) * 100);
         setProgress(pct);
@@ -97,7 +88,7 @@ export default function PixelArtPage() {
         setStatusMsg(STATUS_MESSAGES[msgIndex]);
 
         stepIndex++;
-        animFrameRef.current = window.setTimeout(runStep, 120);
+        animFrameRef.current = window.setTimeout(runStep, 150);
       };
 
       runStep();
@@ -106,7 +97,7 @@ export default function PixelArtPage() {
   );
 
   const processImage = useCallback(
-    (imgSrc: string, size: number) => {
+    (imgSrc: string) => {
       if (animFrameRef.current) {
         clearTimeout(animFrameRef.current);
       }
@@ -118,22 +109,14 @@ export default function PixelArtPage() {
         const outputCanvas = outputCanvasRef.current;
         if (!sourceCanvas || !outputCanvas) return;
 
-        const maxDim = 800;
-        let w = img.width;
-        let h = img.height;
-        if (w > maxDim || h > maxDim) {
-          const ratio = Math.min(maxDim / w, maxDim / h);
-          w = Math.round(w * ratio);
-          h = Math.round(h * ratio);
-        }
-
-        sourceCanvas.width = w;
-        sourceCanvas.height = h;
+        const dim = 512;
+        sourceCanvas.width = dim;
+        sourceCanvas.height = dim;
         const ctx = sourceCanvas.getContext("2d");
         if (!ctx) return;
-        ctx.drawImage(img, 0, 0, w, h);
+        ctx.drawImage(img, 0, 0, dim, dim);
 
-        animatePixelation(sourceCanvas, outputCanvas, size);
+        animatePixelation(sourceCanvas, outputCanvas);
       };
       img.onerror = () => {
         setIsProcessing(false);
@@ -145,12 +128,12 @@ export default function PixelArtPage() {
 
   useEffect(() => {
     if (originalImage) {
-      processImage(originalImage, pixelSize);
+      processImage(originalImage);
     }
     return () => {
       if (animFrameRef.current) clearTimeout(animFrameRef.current);
     };
-  }, [pixelSize, originalImage, processImage]);
+  }, [originalImage, processImage]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -181,7 +164,6 @@ export default function PixelArtPage() {
     setOriginalImage(null);
     setHasResult(false);
     setIsProcessing(false);
-    setPixelSize(8);
     setProgress(0);
     setStatusMsg("");
     if (fileInputRef.current) {
@@ -226,7 +208,7 @@ export default function PixelArtPage() {
             className="text-base sm:text-xl font-fredoka text-gray-400 uppercase tracking-[1px]"
             data-testid="text-pixel-subtitle"
           >
-            Turn your DashKid into pixel art
+            Turn your DashKid into 32x32 pixel art
           </p>
         </div>
 
@@ -274,7 +256,7 @@ export default function PixelArtPage() {
               <div className="flex flex-col items-center gap-2">
                 <span className="text-sm sm:text-base font-bold font-fredoka text-[#32CD32] uppercase tracking-[1px] flex items-center gap-2">
                   {isProcessing && <Zap className="w-4 h-4 animate-spin" />}
-                  Pixel Art
+                  32x32 Pixel Art
                   {isProcessing && <Zap className="w-4 h-4 animate-spin" />}
                 </span>
                 <div
@@ -302,7 +284,7 @@ export default function PixelArtPage() {
                     className="h-full rounded-full transition-all duration-100 ease-out"
                     style={{
                       width: `${progress}%`,
-                      background: `linear-gradient(90deg, #32CD32, #00BFFF, #FF69B4, #FF8C00)`,
+                      background: "linear-gradient(90deg, #32CD32, #00BFFF, #FF69B4, #FF8C00)",
                       backgroundSize: "200% 100%",
                       animation: "shimmer-bar 1s linear infinite",
                     }}
@@ -322,31 +304,6 @@ export default function PixelArtPage() {
                 </span>
               </div>
             )}
-
-            <div className="flex flex-col items-center gap-3 sm:gap-4">
-              <span className="text-sm sm:text-base font-bold font-fredoka text-gray-400 uppercase tracking-[1px]">
-                Pixel Size
-              </span>
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-                {PIXEL_SIZES.map((size) => (
-                  <button
-                    key={size.label}
-                    onClick={() => setPixelSize(size.value)}
-                    disabled={isProcessing}
-                    className={`px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-lg font-bold font-fredoka border-[3px] sm:border-[4px] border-black rounded-full cursor-pointer uppercase tracking-[1px] text-black ${
-                      size.color
-                    } ${
-                      pixelSize === size.value
-                        ? "neo-brutal-shadow"
-                        : "opacity-50"
-                    } ${isProcessing ? "cursor-not-allowed" : ""}`}
-                    data-testid={`button-pixel-${size.label.toLowerCase()}`}
-                  >
-                    {size.label}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             <div className="flex gap-3 sm:gap-4">
               {hasResult && (
