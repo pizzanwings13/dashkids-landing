@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Rocket, Gamepad2, Trophy, Puzzle } from "lucide-react";
+import { Link } from "wouter";
+import { Rocket, Gamepad2, Trophy, Puzzle, Sparkles } from "lucide-react";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
 import dashingImg from "@assets/184_1768929510302.png";
 import chillinImg from "@assets/184_(1)_1768929539935.png";
@@ -19,24 +20,35 @@ const navCards = [
     href: "https://dashkidsmp.xyz",
     color: "bg-[#32CD32]",
     icon: Rocket,
+    external: true,
   },
   {
     title: "GAMES",
     href: "https://tokenrush.live",
     color: "bg-[#00BFFF]",
     icon: Gamepad2,
+    external: true,
   },
   {
     title: "STAKING",
     href: "https://dashkids.vercel.app/",
     color: "bg-[#FF69B4]",
     icon: Trophy,
+    external: true,
   },
   {
     title: "PLAYGROUND",
     href: "https://playground.w3lp.io/collection/dashkids",
     color: "bg-[#FF8C00]",
     icon: Puzzle,
+    external: true,
+  },
+  {
+    title: "PIXEL ART",
+    href: "/pixelart",
+    color: "bg-[#9B30FF]",
+    icon: Sparkles,
+    external: false,
   },
 ];
 
@@ -205,6 +217,9 @@ function StyleSwapper() {
 }
 
 function NavigationHub() {
+  const cardClass = (color: string) =>
+    `${color} aspect-square flex flex-col items-center justify-center gap-2 sm:gap-3 border-[3px] sm:border-[5px] border-black rounded-xl sm:rounded-2xl neo-brutal-shadow cursor-pointer p-3 sm:p-4`;
+
   return (
     <section className="py-8 sm:py-12 px-4" data-testid="navigation-hub-section">
       <h2 className="text-2xl sm:text-4xl font-bold font-fredoka mb-6 sm:mb-8 text-center uppercase tracking-[2px]">
@@ -214,20 +229,39 @@ function NavigationHub() {
       <div className="grid grid-cols-2 gap-3 sm:gap-8 max-w-2xl mx-auto">
         {navCards.map((card) => {
           const IconComponent = card.icon;
-          return (
-            <a
-              key={card.title}
-              href={card.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${card.color} aspect-square flex flex-col items-center justify-center gap-2 sm:gap-3 border-[3px] sm:border-[5px] border-black rounded-xl sm:rounded-2xl neo-brutal-shadow cursor-pointer p-3 sm:p-4`}
-              data-testid={`card-${card.title.toLowerCase()}`}
-            >
+          const content = (
+            <>
               <IconComponent className="w-10 h-10 sm:w-16 sm:h-16 text-black" strokeWidth={2.5} />
               <span className="text-sm sm:text-xl font-bold font-fredoka text-black text-center uppercase tracking-[1px]">
                 {card.title}
               </span>
-            </a>
+            </>
+          );
+
+          if (card.external) {
+            return (
+              <a
+                key={card.title}
+                href={card.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cardClass(card.color)}
+                data-testid={`card-${card.title.toLowerCase().replace(/\s+/g, "-")}`}
+              >
+                {content}
+              </a>
+            );
+          }
+
+          return (
+            <Link key={card.title} href={card.href}>
+              <div
+                className={cardClass(card.color)}
+                data-testid={`card-${card.title.toLowerCase().replace(/\s+/g, "-")}`}
+              >
+                {content}
+              </div>
+            </Link>
           );
         })}
       </div>
