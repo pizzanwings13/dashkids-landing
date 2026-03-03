@@ -80,15 +80,6 @@ const socialLinks = [
       </svg>
     ),
   },
-  {
-    href: "https://magiceden.us/collections/apechain/0x7256de5b154e4242c989fa089c66f153f758335c",
-    label: "Magic Eden",
-    icon: (
-      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-      </svg>
-    ),
-  },
 ];
 
 const characterImages = [

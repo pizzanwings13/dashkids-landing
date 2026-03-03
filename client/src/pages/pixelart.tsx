@@ -506,7 +506,7 @@ export default function PixelArtPage() {
                   </p>
                   <div className="flex gap-3 flex-wrap justify-center">
                     <a
-                      href="https://magiceden.us/collections/apechain/0x7256de5b154e4242c989fa089c66f153f758335c"
+                      href="https://opensea.io/collection/dashkids"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-6 py-3 text-sm sm:text-base font-bold font-fredoka bg-[#FF69B4] text-black border-[3px] border-black rounded-full neo-brutal-shadow uppercase tracking-[1px]"
