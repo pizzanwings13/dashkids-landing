@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
-import { Rocket, Gamepad2, Trophy, Puzzle } from "lucide-react";
+import { Rocket, Trophy, Puzzle } from "lucide-react";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
 import dashingImg from "@assets/184_1768929510302.png";
 import chillinImg from "@assets/184_(1)_1768929539935.png";
@@ -20,13 +20,6 @@ const navCards = [
     href: "https://dashkidsmp.xyz",
     color: "bg-[#32CD32]",
     icon: Rocket,
-    external: true,
-  },
-  {
-    title: "GAMES",
-    href: "https://tokenrush.live",
-    color: "bg-[#00BFFF]",
-    icon: Gamepad2,
     external: true,
   },
   {
