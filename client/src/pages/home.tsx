@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "wouter";
-import { Rocket, Trophy, Puzzle, ArrowUpRight, Zap } from "lucide-react";
+import { Rocket, Trophy, ArrowUpRight, Zap } from "lucide-react";
 import logoPath from "@assets/dashkids logo_1763859062109.png";
 import dashingImg from "@assets/184_1768929510302.png";
 import chillinImg from "@assets/184_(1)_1768929539935.png";
@@ -30,14 +29,6 @@ const navCards = [
     accent: "#FF69B4",
     icon: Trophy,
     external: true,
-  },
-  {
-    title: "PIXEL GENERATOR",
-    description: "Convert your DashKid to pixel art",
-    href: "/pixelart",
-    accent: "#FF8C00",
-    icon: Puzzle,
-    external: false,
   },
 ];
 
@@ -272,23 +263,15 @@ function NavigationHub() {
               </div>
             );
 
-            if (card.external) {
-              return (
-                <a
-                  key={card.title}
-                  href={card.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {inner}
-                </a>
-              );
-            }
-
             return (
-              <Link key={card.title} href={card.href}>
+              <a
+                key={card.title}
+                href={card.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {inner}
-              </Link>
+              </a>
             );
           })}
         </div>
@@ -404,15 +387,6 @@ export default function Home() {
               <Zap className="w-4 h-4" strokeWidth={2.5} />
               Buy on OpenSea
             </a>
-            <Link href="/pixelart">
-              <span
-                className="flex items-center gap-2 px-6 py-3 text-sm sm:text-base font-bold font-fredoka border border-white/20 bg-white/5 text-white rounded-full cursor-pointer uppercase tracking-[1px] hover:bg-white/10 transition-colors"
-                data-testid="link-pixel-generator-hero"
-              >
-                <Puzzle className="w-4 h-4" strokeWidth={2} />
-                Pixel Generator
-              </span>
-            </Link>
           </div>
         </header>
 
