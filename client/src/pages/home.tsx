@@ -17,7 +17,7 @@ const navCards = [
   {
     title: "DASHHUB",
     description: "Your DashKids command center",
-    href: "https://dashkidsmp.xyz",
+    href: "https://dashkidshub.xyz",
     accent: "#32CD32",
     icon: Rocket,
     external: true,
